@@ -1,7 +1,7 @@
 class MovieFetcher {
     constructor(apiKey) {
-      this.apiKey = '83392b0';
-      this.baseUrl = 'https://imdb-api.com/en/API/Title';
+      this.apiKey = 'apiKey';
+      this.baseUrl = ' http://www.omdbapi.com/?i=tt3896198&apikey=83392b0';
     }
   
     async getMovie(imdbID) {
@@ -21,6 +21,8 @@ class MovieFetcher {
     const fetcher = new MovieFetcher('83392b0');
     const movieData = await fetcher.getMovie('tt1375666'); // Example: Inception
   
+    console.log('Movie date:', movieData)
+
     if (movieData) {
       document.getElementById('movie-title').textContent = movieData.title;
       document.getElementById('movie-rating').textContent = `IMDb ${movieData.imDbRating}`;

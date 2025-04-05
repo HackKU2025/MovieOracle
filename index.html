@@ -71,9 +71,26 @@
             </div>
         </nav>
     </header>
+    <script>
+      const movieFetcher = new MovieFetcher('83392b0');
+    
+      async function loadMovie() {
+        const movie = await movieFetcher.getMovie('tt1375666'); // Inception’s ID for example
+        console.log(movie)
 
+        if (movie) {
+          document.querySelector('#movie-title').textContent = movie.title;
+          document.querySelector('#movie-rating').textContent = `IMDb ${movie.imDbRating}`;
+          document.querySelector('#movie-poster').src = movie.image;
+          document.querySelector('#movie-bg').style.backgroundImage = `url(${movie.image})`;
+        }
+      }
+    
+      loadMovie();
+    </script>
     <section class="bg-gradient-to-br from-gray-300 to-gray-100 py-20 md:py-32 relative overflow-hidden">
         <div class="container mx-auto px-4 relative z-10">
+          <img id="movie-poster" class="w-64 rounded-lg shadow-lg mb-4" src="" alt="Movie Poster">
           <h1 id="movie-title" class="text-4xl md:text-6xl font-bold mb-4 jayhawk-yellow">Loading...</h1>
             <p class="text-lg text-gray-600 mb-6">A gripping action-thriller with stunning visuals and a compelling storyline. Critics are calling it a must-see!</p>
             <div class="flex items-center space-x-4 mb-6">
@@ -88,7 +105,9 @@
         </div>
         <div class="absolute top-0 left-0 w-full h-full bg-black opacity-20"></div>
         <div id="movie-bg" class="absolute top-0 left-0 w-full h-full bg-cover bg-center"></div>
+        <script src="main.js"></script>
     </section>
+
 
     <section id="trending-movies-section" class="py-10 bg-gray-200 fade-in">
         <div class="container mx-auto px-4">
@@ -277,21 +296,6 @@ searchBox.addEventListener('input', () => {
     suggestionsList.appendChild(li);
   });
 });
-  </script>
-  <script>
-    const movieFetcher = new MovieFetcher('your_imdb_api_key_here');
-  
-    async function loadMovie() {
-      const movie = await movieFetcher.getMovie('tt1375666'); // Inception’s ID for example
-  
-      if (movie) {
-        document.querySelector('#movie-title').textContent = movie.title;
-        document.querySelector('#movie-rating').textContent = `IMDb ${movie.imDbRating}`;
-        document.querySelector('#movie-poster').src = movie.image;
-      }
-    }
-  
-    loadMovie();
   </script>
 </body>
 </html>
