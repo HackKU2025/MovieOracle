@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Details - Film Oracle</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Define Jayhawk Yellow as a Tailwind CSS color */
+        .jayhawk-yellow {
+            color: #ffc82d;
+        }
+        .bg-jayhawk-yellow {
+            background-color: #ffc82d;
+        }
+        .hover-bg-jayhawk-yellow:hover {
+            background-color: #e6b329; /* Slightly darker shade for hover */
+        }
+        .focus-ring-jayhawk-yellow:focus-visible {
+            outline: 2px solid #e6b329;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="bg-gray-200 text-gray-800 font-serif">
+    <header class="bg-gray-100 bg-opacity-90 backdrop-blur-md sticky top-0 z-50 shadow-md">
+        <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold jayhawk-yellow">Film Oracle</a>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input
+                      type="text"
+                      placeholder="Search movies..."
+                      class="bg-gray-300 text-gray-700 rounded-md px-3 py-2 w-64 focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow"
+                      autocomplete="off"
+                    >
+                    <ul
+                      class="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-md shadow-md mt-1 z-50 hidden max-h-60 overflow-y-auto"
+                    ></ul>
+                  </div>
+                <a href="#" class="hover:text-gray-600">Watchlist</a>
+                <a href="#" class="hover:text-gray-600">Sign In</a>
+                <button class="bg-jayhawk-yellow hover-bg-jayhawk-yellow text-gray-900 font-semibold py-2 px-4 rounded-md focus:outline-none focus-ring-jayhawk-yellow">Sign Up</button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 py-10">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 p-6">
+                <div class="md:col-span-1 flex justify-center">
+                    <img src="https://via.placeholder.com/300x450" alt="Movie Poster" class="rounded-md shadow-lg">
+                </div>
+                <div class="md:col-span-2">
+                    <h1 class="text-3xl font-bold mb-2 jayhawk-yellow">Movie Title Here</h1>
+                    <p class="text-gray-600 mb-1">Director: <span class="font-semibold">Director Name</span></p>
+                    <p class="text-gray-600 mb-3">Published Year: <span class="font-semibold">2025</span></p>
+                    <h2 class="text-xl font-semibold mb-2 jayhawk-yellow">Overview</h2>
+                    <p class="text-gray-700">
+                        This is where the movie overview will go. You can provide a brief synopsis of the film, highlighting key plot points, themes, and characters. This space should give the user a good understanding of what the movie is about without giving away too many spoilers.
+                    </p>
+                    <div class="mt-6 flex space-x-4">
+                        <button class="bg-jayhawk-yellow hover-bg-jayhawk-yellow text-gray-900 font-semibold py-3 px-6 rounded-md focus:outline-none focus-ring-jayhawk-yellow">Play Now</button>
+                        <button class="bg-gray-400 hover:bg-gray-500 text-gray-800 font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow">Add to Watchlist</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-100 py-8 text-gray-600 text-sm shadow-inner mt-10">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <p>&copy; 2025 Film Oracle. All rights reserved.</p>
+            <div class="flex space-x-4">
+                <a href="#" class="hover:text-gray-700">Terms of Service</a>
+                <a href="#" class="hover:text-gray-700">Privacy Policy</a>
+                <a href="#" class="hover:text-gray-700">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,13 +1,282 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film Oracle - Your Ultimate Movie Guide</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for horizontal scrolling */
+        .scroll-container {
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
+        }
+
+        .movie-card {
+            flex: 0 0 auto; /* Don't grow or shrink, maintain width */
+            width: 200px; /* Adjust as needed */
+            margin-right: 10px;
+        }
+
+        /* Initial state for fade-in */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px); /* Optional: slight slide-up effect */
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+
+        .fade-in.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Define Jayhawk Yellow as a Tailwind CSS color */
+        .jayhawk-yellow {
+            color: #ffc82d;
+        }
+        .bg-jayhawk-yellow {
+            background-color: #ffc82d;
+        }
+        .hover-bg-jayhawk-yellow:hover {
+            background-color: #e6b329; /* Slightly darker shade for hover */
+        }
+        .focus-ring-jayhawk-yellow:focus-visible {
+            outline: 2px solid #e6b329;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="bg-gray-200 text-gray-800 font-serif">
+    <header class="bg-gray-100 bg-opacity-90 backdrop-blur-md sticky top-0 z-50 shadow-md">
+        <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="#" class="text-xl font-bold jayhawk-yellow">Film Oracle</a>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input 
+                      id="search-box"
+                      type="text"
+                      placeholder="Search movies..."
+                      class="bg-gray-300 text-gray-700 rounded-md px-3 py-2 w-64 focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow"
+                      autocomplete="off"
+                    >
+                    <ul 
+                      id="suggestions-list" 
+                      class="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-md shadow-md mt-1 z-50 hidden max-h-60 overflow-y-auto"
+                    ></ul>
+                  </div>
+                <a href="#" class="hover:text-gray-600">Watchlist</a>
+                <a href="#" class="hover:text-gray-600">Sign In</a>
+                <button class="bg-jayhawk-yellow hover-bg-jayhawk-yellow text-gray-900 font-semibold py-2 px-4 rounded-md focus:outline-none focus-ring-jayhawk-yellow">Sign Up</button>
+            </div>
+        </nav>
+    </header>
+
+    <section class="bg-gradient-to-br from-gray-300 to-gray-100 py-20 md:py-32 relative overflow-hidden">
+        <div class="container mx-auto px-4 relative z-10">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 jayhawk-yellow">Featured Movie Title</h1>
+            <p class="text-lg text-gray-600 mb-6">A gripping action-thriller with stunning visuals and a compelling storyline. Critics are calling it a must-see!</p>
+            <div class="flex items-center space-x-4 mb-6">
+                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md">IMDb 8.5</span>
+                <span class="text-gray-500">Action | Thriller | Adventure</span>
+            </div>
+            <div class="flex space-x-4">
+                <button class="bg-jayhawk-yellow hover-bg-jayhawk-yellow text-gray-900 font-semibold py-3 px-6 rounded-md focus:outline-none focus-ring-jayhawk-yellow">Play Now</button>
+                <button class="bg-gray-400 hover:bg-gray-500 text-gray-800 font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow">Add to Watchlist</button>
+                <button onclick="window.location.href='movie-details.html'" class="bg-gray-400 hover:bg-gray-500 text-gray-800 font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow">More Info</button>
+            </div>
+        </div>
+        <div class="absolute top-0 left-0 w-full h-full bg-black opacity-20"></div>
+        <div class="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1519680982491-5200971ef30b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y2h1cmNoJTIwaW50ZXJpb3J8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60')] bg-cover bg-center"></div>
+    </section>
+
+    <section id="trending-movies-section" class="py-10 bg-gray-200 fade-in">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-semibold mb-4 jayhawk-yellow">Trending Movies</h2>
+            <div class="scroll-container flex space-x-4">
+                <div class="movie-card bg-white rounded-md shadow-md overflow-hidden">
+                    <div class="relative">
+                        <img src="https://image.tmdb.org/t/p/w500/movie_poster1.jpg" alt="Movie Poster" class="w-full h-auto">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-3">
+                          <button onclick="window.location.href='move-details.html'">
+                            <h3 class="text-lg font-semibold mb-1 truncate text-white">Movie Title 1</h3>
+                          </button>
+                            <div class="flex items-center space-x-2 text-sm text-gray-300">
+                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md">IMDb 7.8</span>
+                                <span>2024</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="movie-card bg-white rounded-md shadow-md overflow-hidden">
+                    <div class="relative">
+                        <img src="https://image.tmdb.org/t/p/w500/movie_poster2.jpg" alt="Movie Poster" class="w-full h-auto">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-3">
+                            <h3 class="text-lg font-semibold mb-1 truncate text-white">Another Movie Title</h3>
+                            <div class="flex items-center space-x-2 text-sm text-gray-300">
+                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md">IMDb 6.9</span>
+                                <span>2023</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+        </div>
+    </section>
+
+    <section class="py-10 bg-gray-200">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-semibold mb-4 jayhawk-yellow">Popular TV Shows</h2>
+            <div class="scroll-container flex space-x-4">
+                <div class="movie-card bg-white rounded-md shadow-md overflow-hidden">
+                    <div class="relative">
+                        <img src="https://image.tmdb.org/t/p/w500/tv_show_poster1.jpg" alt="TV Show Poster" class="w-full h-auto">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-3">
+                            <h3 class="text-lg font-semibold mb-1 truncate text-white">TV Show Title 1</h3>
+                            <div class="flex items-center space-x-2 text-sm text-gray-300">
+                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md">IMDb 8.2</span>
+                                <span>2 Seasons</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="movie-card bg-white rounded-md shadow-md overflow-hidden">
+                    <div class="relative">
+                        <img src="https://image.tmdb.org/t/p/w500/tv_show_poster2.jpg" alt="TV Show Poster" class="w-full h-auto">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-3">
+                            <h3 class="text-lg font-semibold mb-1 truncate text-white">Another Great Show</h3>
+                            <div class="flex items-center space-x-2 text-sm text-gray-300">
+                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md">IMDb 7.5</span>
+                                <span>5 Seasons</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-100 py-8 text-gray-600 text-sm shadow-inner">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <p>&copy; 2025 Film Oracle. All rights reserved.</p>
+            <div class="flex space-x-4">
+                <a href="#" class="hover:text-gray-700">Terms of Service</a>
+                <a href="#" class="hover:text-gray-700">Privacy Policy</a>
+                <a href="#" class="hover:text-gray-700">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const trendingMoviesSection = document.getElementById('trending-movies-section');
+
+        function checkVisibility() {
+            const rect = trendingMoviesSection.getBoundingClientRect();
+            const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
+
+            if (isVisible && !trendingMoviesSection.classList.contains('active')) {
+                trendingMoviesSection.classList.add('active');
+            }
+        }
+
+        // Check on initial load and on scroll
+        checkVisibility();
+        window.addEventListener('scroll', checkVisibility);
+    </script>
+<script>
+    const searchBox = document.getElementById('search-box');
+    const suggestionsList = document.getElementById('suggestions-list');
+  
+    const movieData = [
+  {
+    title: "The Matrix",
+    poster: "https://image.tmdb.org/t/p/w200/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+  },
+  {
+    title: "The Godfather",
+    poster: "https://image.tmdb.org/t/p/w200/d4KNaTrltq6bpkFS01pYtyXa09m.jpg"
+  },
+  {
+    title: "The Dark Knight",
+    poster: "https://image.tmdb.org/t/p/w200/qJ2tW6WMUDux911r6m7haRef0WH.jpg"
+  },
+  {
+    title: "Inception",
+    poster: "https://image.tmdb.org/t/p/w200/edv5CZvWj09upOsy2Y6IwDhK8bt.jpg"
+  },
+  {
+    title: "Interstellar",
+    poster: "https://image.tmdb.org/t/p/w200/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
+  },
+  {
+    title: "Pulp Fiction",
+    poster: "https://image.tmdb.org/t/p/w200/dM2w364MScsjFf8pfMbaWUcWrR.jpg"
+  },
+  {
+    title: "Forrest Gump",
+    poster: "https://image.tmdb.org/t/p/w200/saHP97rTPS5eLmrLQEcANmKrsFl.jpg"
+  },
+  {
+    title: "The Shawshank Redemption",
+    poster: "https://image.tmdb.org/t/p/w200/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg"
+  },
+  {
+    title: "Fight Club",
+    poster: "https://image.tmdb.org/t/p/w200/bptfVGEQuv6vDTIMVCHjJ9Dz8PX.jpg"
+  },
+  {
+    title: "The Lion King",
+    poster: "https://image.tmdb.org/t/p/w200/2PtYdHCdU2V1o3kYJdHJ8p1KdLu.jpg"
+  }
+];
+  
+searchBox.addEventListener('input', () => {
+  const inputVal = searchBox.value.toLowerCase();
+  suggestionsList.innerHTML = '';
+
+  if (inputVal === '') {
+    suggestionsList.classList.add('hidden');
+    return;
+  }
+
+  const filtered = movieData.filter(movie => 
+    movie.title.toLowerCase().includes(inputVal)
+  );
+
+  if (filtered.length === 0) {
+    suggestionsList.classList.add('hidden');
+    return;
+  }
+
+  suggestionsList.classList.remove('hidden'); // 🔥 Unhide the list here
+
+  filtered.forEach(movie => {
+    const li = document.createElement('li');
+    li.className = 'px-4 py-2 hover:bg-gray-200 cursor-pointer flex items-center space-x-2';
+
+    const img = document.createElement('img');
+    img.src = movie.poster;
+    img.alt = movie.title;
+    img.className = 'w-8 h-12 object-cover rounded';
+
+    const span = document.createElement('span');
+    span.textContent = movie.title;
+
+    li.appendChild(img);
+    li.appendChild(span);
+
+    li.addEventListener('click', () => {
+      searchBox.value = movie.title;
+      suggestionsList.classList.add('hidden');
+    });
+
+    suggestionsList.appendChild(li);
+  });
+});
+  </script>
+</body>
 </html>
