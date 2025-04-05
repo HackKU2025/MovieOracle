@@ -22,8 +22,11 @@ FROM nginx:alpine
 # Copy the build files to nginx serve directory
 COPY --from=0 /app/dist /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 80
+# Copy custom nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 8080 for Google Cloud Run
+EXPOSE 8080
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
