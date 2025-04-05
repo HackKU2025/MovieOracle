@@ -5,14 +5,6 @@ import json
 import argparse # Library to handle command-line arguments
 import re # Regular expression library for cleaning text
 
-# --- IMPORTANT WARNING ---
-# This code is for EDUCATIONAL PURPOSES ONLY to demonstrate web scraping concepts,
-# using the structure found in the provided HTML file (bjurhgojw.rtf - reviews page).
-# DO NOT run this against live websites like IMDb, Metacritic, etc., without permission,
-# as it likely violates their Terms of Service and may not work due to anti-scraping measures.
-# Always check a website's '/robots.txt' file and Terms of Service before attempting to scrape.
-# Consider using official APIs when available.
-
 class ImdbReviewScraper:
     """
     A class to scrape user reviews from an IMDb title reviews page URL.
