@@ -1,72 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-// --- Mock Data ---
-// In a real app, this would come from an API
-const mockData = [
-  {
-    id: 1,
-    title: "Inception",
-    type: "Movie",
-    year: 2010,
-    genre: ["Sci-Fi", "Action", "Thriller"],
-    plot: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O., but his tragic past may doom the project and his team to disaster.",
-    themes: ["Dreams", "Reality", "Memory", "Grief"],
-    keywords: ["dream", "subconscious", "heist", "mind", "manipulation"],
-    director: "Christopher Nolan",
-    actors: ["Leonardo DiCaprio", "Joseph Gordon-Levitt", "Elliot Page"],
-    ratings: { imdb: 8.8, rottenTomatoes: "87%", metacritic: 74 },
-    reviews: [
-      "A visually stunning and intellectually engaging thriller.",
-      "Complex plot that rewards multiple viewings.",
-      "Nolan's masterpiece of intricate storytelling.",
-      "Sometimes confusing, but always captivating.",
-    ],
-    whereToWatch: ["Streaming Service A", "Rent on Platform B"],
-    publisher: null, // N/A for movies
-  },
-  {
-    id: 2,
-    title: "The Witcher 3: Wild Hunt",
-    type: "Game",
-    year: 2015,
-    genre: ["Action RPG", "Open World", "Fantasy"],
-    plot: "As Geralt of Rivia, a monster slayer for hire, you embark on an epic journey to find Ciri, a child of prophecy, while navigating a war-torn world and confronting the supernatural Wild Hunt.",
-    themes: ["Choice & Consequence", "War", "Found Family", "Destiny"],
-    keywords: ["monster hunting", "fantasy", "magic", "open world", "RPG"],
-    director: "Konrad Tomaszkiewicz, Mateusz Kanik, Sebastian Stępień",
-    actors: ["Doug Cockle (Geralt VO)", "Denise Gough (Yennefer VO)"], // Voice Actors
-    ratings: { ign: 9.3, gamespot: 10, metacritic: 92 },
-     reviews: [
-      "A landmark in open-world RPG design.",
-      "Incredible storytelling and deep characters.",
-      "Vast world filled with meaningful content.",
-      "Combat can be clunky at times, but the world pulls you in.",
-    ],
-    whereToWatch: ["Steam", "GOG", "PlayStation Store", "Xbox Store"], // Where to buy/play
-    publisher: "CD Projekt Red",
-  },
-   {
-    id: 3,
-    title: "Parasite",
-    type: "Movie",
-    year: 2019,
-    genre: ["Dark Comedy", "Thriller", "Drama"],
-    plot: "Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.",
-    themes: ["Class Struggle", "Social Inequality", "Family", "Deception"],
-    keywords: ["social commentary", "dark humor", "family", "wealth gap", "con"],
-    director: "Bong Joon Ho",
-    actors: ["Song Kang-ho", "Lee Sun-kyun", "Cho Yeo-jeong", "Choi Woo-shik", "Park So-dam"],
-    ratings: { imdb: 8.6, rottenTomatoes: "99%", metacritic: 96 },
-    reviews: [
-        "A masterful blend of genres that is both hilarious and deeply unsettling.",
-        "Bong Joon Ho delivers a scathing critique of capitalism.",
-        "Every frame is meticulously crafted.",
-        "A truly unpredictable and unforgettable film.",
-    ],
-    whereToWatch: ["Streaming Service C", "Rent on Platform D"],
-    publisher: null,
-  },
-];
+const API_KEY = '83392b0';
+const BASE_URL = 'https://www.omdbapi.com/';
 
 // --- Helper Function for AI Summary (Simulated) ---
 function generateAiSummary(reviews) {
@@ -87,8 +22,6 @@ function generateAiSummary(reviews) {
   };
 }
 
-// --- React Components ---
-
 // Simple Icon Placeholder (replace with actual icons like Lucide)
 const Icon = ({ name, className = "w-4 h-4 inline-block mr-1" }) => (
   <span className={className}>[{name}]</span> // Placeholder
@@ -98,40 +31,64 @@ const Icon = ({ name, className = "w-4 h-4 inline-block mr-1" }) => (
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
-  const [filteredData, setFilteredData] = useState(mockData);
+  const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [aiResponse, setAiResponse] = useState({ summary: '', witty: '' });
 
-  // Effect to filter data when search term changes
+  // Effect to search when search term changes
   useEffect(() => {
-    if (!searchTerm) {
-      setFilteredData(mockData); // Show all if search is empty
-      setSelectedItem(null); // Clear selection
-      setAiResponse({ summary: '', witty: '' }); // Clear AI response
-      return;
-    }
+    const searchMovies = async () => {
+      if (!searchTerm) {
+        setSearchResults([]);
+        setSelectedItem(null);
+        setAiResponse({ summary: '', witty: '' });
+        return;
+      }
 
-    const lowerSearchTerm = searchTerm.toLowerCase();
-    const results = mockData.filter(item =>
-      item.title.toLowerCase().includes(lowerSearchTerm) ||
-      item.genre.some(g => g.toLowerCase().includes(lowerSearchTerm)) ||
-      item.keywords.some(k => k.toLowerCase().includes(lowerSearchTerm)) ||
-      (item.director && item.director.toLowerCase().includes(lowerSearchTerm)) ||
-      (item.actors && item.actors.some(a => a.toLowerCase().includes(lowerSearchTerm))) ||
-      (item.publisher && item.publisher.toLowerCase().includes(lowerSearchTerm)) ||
-      item.year.toString().includes(lowerSearchTerm)
-    );
-    setFilteredData(results);
-    setSelectedItem(null); // Clear selection on new search
-     setAiResponse({ summary: '', witty: '' }); // Clear AI response
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(`${BASE_URL}?apikey=${API_KEY}&s=${encodeURIComponent(searchTerm)}`);
+        const data = await response.json();
+
+        if (data.Response === 'True') {
+          setSearchResults(data.Search);
+        } else {
+          setSearchResults([]);
+          setError(data.Error || 'No results found');
+        }
+      } catch (err) {
+        setError('Failed to fetch data. Please try again.');
+        setSearchResults([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const debounceTimer = setTimeout(searchMovies, 500);
+    return () => clearTimeout(debounceTimer);
   }, [searchTerm]);
 
   // Handle selecting an item from search results
-  const handleSelect = (item) => {
-    setSelectedItem(item);
-    if (item && item.reviews) {
-        setAiResponse(generateAiSummary(item.reviews));
-    } else {
-        setAiResponse({ summary: '', witty: '' });
+  const handleSelect = async (item) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${BASE_URL}?apikey=${API_KEY}&i=${item.imdbID}&plot=full`);
+      const data = await response.json();
+      
+      if (data.Response === 'True') {
+        setSelectedItem(data);
+        // Generate AI summary based on the plot
+        setAiResponse(generateAiSummary([data.Plot]));
+      } else {
+        setError('Failed to fetch movie details');
+      }
+    } catch (err) {
+      setError('Failed to fetch movie details');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -139,16 +96,16 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 font-sans p-4 md:p-8">
       <header className="text-center mb-8">
         <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-2">
-          Hackathon Oracle
+          Movie Oracle
         </h1>
-        <p className="text-lg text-gray-400">Your Witty Guide to Movies & Games</p>
+        <p className="text-lg text-gray-400">Your Guide to Movies</p>
       </header>
 
       {/* Search Bar */}
       <div className="mb-6 max-w-2xl mx-auto">
         <input
           type="text"
-          placeholder="Search by title, genre, actor, director, year..."
+          placeholder="Search for a movie by title..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 placeholder-gray-500 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-md"
@@ -157,102 +114,87 @@ function App() {
 
       {/* Results Area */}
       <div className="flex flex-col md:flex-row gap-6 max-w-6xl mx-auto">
-
         {/* Search Results List (Left Side) */}
         <div className="md:w-1/3 bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-700 max-h-[60vh] overflow-y-auto">
           <h2 className="text-xl font-semibold mb-3 border-b border-gray-600 pb-2 text-gray-300">Search Results</h2>
-          {filteredData.length > 0 ? (
+          {loading && <p className="text-gray-400">Loading...</p>}
+          {error && <p className="text-red-400">{error}</p>}
+          {!loading && !error && searchResults.length > 0 ? (
             <ul className="space-y-2">
-              {filteredData.map(item => (
-                <li key={item.id}>
+              {searchResults.map(item => (
+                <li key={item.imdbID}>
                   <button
                     onClick={() => handleSelect(item)}
-                    className={`w-full text-left p-2 rounded hover:bg-gray-700 focus:outline-none focus:bg-purple-800 transition-colors duration-150 ${selectedItem?.id === item.id ? 'bg-purple-700 font-semibold' : 'bg-gray-750'}`}
+                    className={`w-full text-left p-2 rounded hover:bg-gray-700 focus:outline-none focus:bg-purple-800 transition-colors duration-150 ${selectedItem?.imdbID === item.imdbID ? 'bg-purple-700 font-semibold' : 'bg-gray-750'}`}
                   >
-                    {item.title} ({item.year}) - <span className="text-sm text-gray-400">{item.type}</span>
+                    {item.Title} ({item.Year})
                   </button>
                 </li>
               ))}
             </ul>
           ) : (
-             searchTerm && <p className="text-gray-400">No results found for "{searchTerm}". Try broadening your search!</p>
+            !loading && !error && searchTerm && <p className="text-gray-400">No results found for "{searchTerm}". Try a different search!</p>
           )}
-           {!searchTerm && <p className="text-gray-400">Start typing to search...</p>}
+          {!searchTerm && <p className="text-gray-400">Start typing to search...</p>}
         </div>
 
         {/* Selected Item Details (Right Side) */}
         <div className="md:w-2/3 bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 min-h-[60vh]">
-          {selectedItem ? (
+          {loading && selectedItem ? (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-400">Loading movie details...</p>
+            </div>
+          ) : selectedItem ? (
             <div className="space-y-4 animate-fade-in">
-              <h2 className="text-3xl font-bold text-purple-400">{selectedItem.title} <span className="text-xl font-normal text-gray-400">({selectedItem.year})</span></h2>
+              <h2 className="text-3xl font-bold text-purple-400">{selectedItem.Title} <span className="text-xl font-normal text-gray-400">({selectedItem.Year})</span></h2>
 
               {/* AI Summary Section */}
               <div className="bg-gradient-to-r from-purple-900 to-indigo-900 p-4 rounded-lg border border-purple-700 shadow-inner">
-                 <h3 className="text-lg font-semibold text-purple-300 mb-2 flex items-center"><Icon name="AI" /> AI Verdict:</h3>
-                 <p className="text-gray-300 mb-2 italic">{aiResponse.summary}</p>
-                 <p className="text-purple-300 font-medium">🎙️ Oracle says: "{aiResponse.witty}"</p>
+                <h3 className="text-lg font-semibold text-purple-300 mb-2 flex items-center"><Icon name="AI" /> AI Verdict:</h3>
+                <p className="text-gray-300 mb-2 italic">{aiResponse.summary}</p>
+                <p className="text-purple-300 font-medium">🎙️ Oracle says: "{aiResponse.witty}"</p>
               </div>
 
               {/* Details Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-700">
-                <div><strong className="text-gray-400">Genre:</strong> {selectedItem.genre.join(', ')}</div>
-                {selectedItem.director && <div><strong className="text-gray-400">Director:</strong> {selectedItem.director}</div>}
-                 {selectedItem.publisher && <div><strong className="text-gray-400">Publisher:</strong> {selectedItem.publisher}</div>}
-                <div><strong className="text-gray-400">Starring/VO:</strong> {selectedItem.actors.slice(0, 3).join(', ')}{selectedItem.actors.length > 3 ? '...' : ''}</div>
-                <div><strong className="text-gray-400">Where to Watch/Play:</strong> {selectedItem.whereToWatch.join(', ')}</div>
+                <div><strong className="text-gray-400">Genre:</strong> {selectedItem.Genre}</div>
+                <div><strong className="text-gray-400">Director:</strong> {selectedItem.Director}</div>
+                <div><strong className="text-gray-400">Actors:</strong> {selectedItem.Actors}</div>
+                <div><strong className="text-gray-400">Runtime:</strong> {selectedItem.Runtime}</div>
+                <div><strong className="text-gray-400">Rated:</strong> {selectedItem.Rated}</div>
+                <div><strong className="text-gray-400">IMDb Rating:</strong> {selectedItem.imdbRating}</div>
               </div>
 
               {/* Plot */}
-               <div className="pt-4 border-t border-gray-700">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-1">Plot Summary:</h3>
-                 <p className="text-gray-400 text-sm">{selectedItem.plot}</p>
-              </div>
-
-              {/* Themes & Keywords */}
-               <div className="pt-4 border-t border-gray-700">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-1">Themes:</h3>
-                 <div className="flex flex-wrap gap-2">
-                    {selectedItem.themes.map(theme => <span key={theme} className="bg-gray-700 text-xs px-2 py-1 rounded-full">{theme}</span>)}
-                 </div>
-                 <h3 className="text-lg font-semibold text-gray-300 mt-3 mb-1">Keywords:</h3>
-                 <div className="flex flex-wrap gap-2">
-                    {selectedItem.keywords.map(kw => <span key={kw} className="bg-gray-700 text-xs px-2 py-1 rounded-full">{kw}</span>)}
-                 </div>
+              <div className="pt-4 border-t border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-300 mb-1">Plot Summary:</h3>
+                <p className="text-gray-400 text-sm">{selectedItem.Plot}</p>
               </div>
 
               {/* Ratings */}
               <div className="pt-4 border-t border-gray-700">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-2">Ratings:</h3>
-                 <div className="flex flex-wrap gap-4">
-                    {Object.entries(selectedItem.ratings).map(([source, rating]) => (
-                        <div key={source} className="text-center p-2 bg-gray-700 rounded">
-                            <div className="text-xs uppercase text-gray-400">{source}</div>
-                            <div className="text-lg font-bold text-purple-400">{rating}</div>
-                        </div>
-                    ))}
-                 </div>
+                <h3 className="text-lg font-semibold text-gray-300 mb-2">Ratings:</h3>
+                <div className="flex flex-wrap gap-4">
+                  {selectedItem.Ratings?.map((rating, index) => (
+                    <div key={index} className="text-center p-2 bg-gray-700 rounded">
+                      <div className="text-xs uppercase text-gray-400">{rating.Source}</div>
+                      <div className="text-lg font-bold text-purple-400">{rating.Value}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
-
-               {/* Simulated Reviews */}
-              <div className="pt-4 border-t border-gray-700">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-2">Review Snippets (Simulated):</h3>
-                 <ul className="list-disc list-inside space-y-1 text-sm text-gray-400 pl-2">
-                    {selectedItem.reviews.map((review, index) => <li key={index}>{review}</li>)}
-                 </ul>
-              </div>
-
             </div>
           ) : (
             <div className="flex items-center justify-center h-full">
-              <p className="text-gray-500 text-lg">Select an item from the search results to see details.</p>
+              <p className="text-gray-500 text-lg">Select a movie from the search results to see details.</p>
             </div>
           )}
         </div>
       </div>
 
-       {/* Footer */}
+      {/* Footer */}
       <footer className="text-center mt-8 text-gray-500 text-sm">
-        Powered by Hackathon Fuel & Mock Data™
+        Powered by OMDB API
       </footer>
 
       {/* Basic Fade-in Animation Style */}
