@@ -74,11 +74,11 @@
 
     <section class="bg-gradient-to-br from-gray-300 to-gray-100 py-20 md:py-32 relative overflow-hidden">
         <div class="container mx-auto px-4 relative z-10">
-            <h1 class="text-4xl md:text-6xl font-bold mb-4 jayhawk-yellow">Featured Movie Title</h1>
+          <h1 id="movie-title" class="text-4xl md:text-6xl font-bold mb-4 jayhawk-yellow">Loading...</h1>
             <p class="text-lg text-gray-600 mb-6">A gripping action-thriller with stunning visuals and a compelling storyline. Critics are calling it a must-see!</p>
             <div class="flex items-center space-x-4 mb-6">
-                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md">IMDb 8.5</span>
-                <span class="text-gray-500">Action | Thriller | Adventure</span>
+              <span id="movie-rating" class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md">IMDb ...</span>
+              <span class="text-gray-500">Action | Thriller | Adventure</span>
             </div>
             <div class="flex space-x-4">
                 <button class="bg-jayhawk-yellow hover-bg-jayhawk-yellow text-gray-900 font-semibold py-3 px-6 rounded-md focus:outline-none focus-ring-jayhawk-yellow">Play Now</button>
@@ -87,7 +87,7 @@
             </div>
         </div>
         <div class="absolute top-0 left-0 w-full h-full bg-black opacity-20"></div>
-        <div class="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1519680982491-5200971ef30b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y2h1cmNoJTIwaW50ZXJpb3J8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60')] bg-cover bg-center"></div>
+        <div id="movie-bg" class="absolute top-0 left-0 w-full h-full bg-cover bg-center"></div>
     </section>
 
     <section id="trending-movies-section" class="py-10 bg-gray-200 fade-in">
@@ -99,7 +99,7 @@
                         <img src="https://image.tmdb.org/t/p/w500/movie_poster1.jpg" alt="Movie Poster" class="w-full h-auto">
                         <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-3">
-                          <button onclick="window.location.href='move-details.html'">
+                          <button onclick="window.location.href='movie-details.html'">
                             <h3 class="text-lg font-semibold mb-1 truncate text-white">Movie Title 1</h3>
                           </button>
                             <div class="flex items-center space-x-2 text-sm text-gray-300">
@@ -277,6 +277,21 @@ searchBox.addEventListener('input', () => {
     suggestionsList.appendChild(li);
   });
 });
+  </script>
+  <script>
+    const movieFetcher = new MovieFetcher('your_imdb_api_key_here');
+  
+    async function loadMovie() {
+      const movie = await movieFetcher.getMovie('tt1375666'); // Inception’s ID for example
+  
+      if (movie) {
+        document.querySelector('#movie-title').textContent = movie.title;
+        document.querySelector('#movie-rating').textContent = `IMDb ${movie.imDbRating}`;
+        document.querySelector('#movie-poster').src = movie.image;
+      }
+    }
+  
+    loadMovie();
   </script>
 </body>
 </html>
