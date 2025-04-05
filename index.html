@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Film Oracle - Your Ultimate Movie Guide</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
     <style>
         /* Custom styles for horizontal scrolling */
         .scroll-container {
@@ -32,11 +32,12 @@
         }
 
         /* Define Jayhawk Yellow as a Tailwind CSS color */
+        /* Note: Custom colors are better defined in tailwind.config.js, but for CDN use: */
         .jayhawk-yellow {
-            color: #ffc82d;
+            color: #ffc82d; /* KU Yellow */
         }
         .bg-jayhawk-yellow {
-            background-color: #ffc82d;
+            background-color: #ffc82d; /* KU Yellow */
         }
         .hover-bg-jayhawk-yellow:hover {
             background-color: #e6b329; /* Slightly darker shade for hover */
@@ -44,6 +45,10 @@
         .focus-ring-jayhawk-yellow:focus-visible {
             outline: 2px solid #e6b329;
             outline-offset: 2px;
+        }
+        /* Ensure body takes full height if needed */
+        html, body {
+            height: 100%;
         }
     </style>
 </head>
@@ -53,15 +58,15 @@
             <a href="#" class="text-xl font-bold jayhawk-yellow">Film Oracle</a>
             <div class="flex items-center space-x-4">
                 <div class="relative">
-                    <input 
+                    <input
                       id="search-box"
                       type="text"
                       placeholder="Search movies..."
                       class="bg-gray-300 text-gray-700 rounded-md px-3 py-2 w-64 focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow"
                       autocomplete="off"
                     >
-                    <ul 
-                      id="suggestions-list" 
+                    <ul
+                      id="suggestions-list"
                       class="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-md shadow-md mt-1 z-50 hidden max-h-60 overflow-y-auto"
                     ></ul>
                   </div>
@@ -71,106 +76,88 @@
             </div>
         </nav>
     </header>
-    <script>
-      const movieFetcher = new MovieFetcher('83392b0');
-    
-      async function loadMovie() {
-        const movie = await movieFetcher.getMovie('tt1375666'); // Inception’s ID for example
-        console.log(movie)
 
-        if (movie) {
-          document.querySelector('#movie-title').textContent = movie.title;
-          document.querySelector('#movie-rating').textContent = `IMDb ${movie.imDbRating}`;
-          document.querySelector('#movie-poster').src = movie.image;
-          document.querySelector('#movie-bg').style.backgroundImage = `url(${movie.image})`;
-        }
-      }
-    
-      loadMovie();
-    </script>
     <section class="bg-gradient-to-br from-gray-300 to-gray-100 py-20 md:py-32 relative overflow-hidden">
         <div class="container mx-auto px-4 relative z-10">
-          <img id="movie-poster" class="w-64 rounded-lg shadow-lg mb-4" src="" alt="Movie Poster">
+          <img id="movie-poster" class="w-64 rounded-lg shadow-lg mb-4" src="https://placehold.co/256x384/333333/cccccc?text=Loading..." alt="Movie Poster">
           <h1 id="movie-title" class="text-4xl md:text-6xl font-bold mb-4 jayhawk-yellow">Loading...</h1>
-            <p class="text-lg text-gray-600 mb-6">A gripping action-thriller with stunning visuals and a compelling storyline. Critics are calling it a must-see!</p>
-            <div class="flex items-center space-x-4 mb-6">
-              <span id="movie-rating" class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md">IMDb ...</span>
-              <span class="text-gray-500">Action | Thriller | Adventure</span>
-            </div>
-            <div class="flex space-x-4">
-                <button class="bg-jayhawk-yellow hover-bg-jayhawk-yellow text-gray-900 font-semibold py-3 px-6 rounded-md focus:outline-none focus-ring-jayhawk-yellow">Play Now</button>
-                <button class="bg-gray-400 hover:bg-gray-500 text-gray-800 font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow">Add to Watchlist</button>
-                <button onclick="window.location.href='movie-details.html'" class="bg-gray-400 hover:bg-gray-500 text-gray-800 font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow">More Info</button>
-            </div>
+          <p class="text-lg text-gray-600 mb-6">Loading description...</p>
+          <div class="flex items-center space-x-4 mb-6">
+            <span id="movie-rating" class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md">IMDb ...</span>
+            <span class="text-gray-500">Loading genres...</span>
+          </div>
+          <div class="flex space-x-4">
+              <button class="bg-jayhawk-yellow hover-bg-jayhawk-yellow text-gray-900 font-semibold py-3 px-6 rounded-md focus:outline-none focus-ring-jayhawk-yellow">Play Now</button>
+              <button class="bg-gray-400 hover:bg-gray-500 text-gray-800 font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow">Add to Watchlist</button>
+              <button onclick="window.location.href='movie-details.html'" class="bg-gray-400 hover:bg-gray-500 text-gray-800 font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow">More Info</button>
+          </div>
         </div>
-        <div class="absolute top-0 left-0 w-full h-full bg-black opacity-20"></div>
-        <div id="movie-bg" class="absolute top-0 left-0 w-full h-full bg-cover bg-center"></div>
-        <script src="main.js"></script>
+
+        <div class="absolute top-0 left-0 w-full h-full bg-black opacity-20 z-0"></div>
+
+        <div id="movie-bg" class="absolute top-0 left-0 w-full h-full bg-cover bg-center z-[-1]"></div>
+
     </section>
-
-
     <section id="trending-movies-section" class="py-10 bg-gray-200 fade-in">
         <div class="container mx-auto px-4">
             <h2 class="text-2xl font-semibold mb-4 jayhawk-yellow">Trending Movies</h2>
-            <div class="scroll-container flex space-x-4">
-                <div class="movie-card bg-white rounded-md shadow-md overflow-hidden">
+            <div class="scroll-container flex space-x-4 pb-4"> <div class="movie-card bg-white rounded-md shadow-md overflow-hidden">
                     <div class="relative">
-                        <img src="https://image.tmdb.org/t/p/w500/movie_poster1.jpg" alt="Movie Poster" class="w-full h-auto">
+                        <img src="https://placehold.co/200x300/666/ccc?text=Movie+1" alt="Movie Poster" class="w-full h-auto">
                         <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-3">
                           <button onclick="window.location.href='movie-details.html'">
                             <h3 class="text-lg font-semibold mb-1 truncate text-white">Movie Title 1</h3>
                           </button>
                             <div class="flex items-center space-x-2 text-sm text-gray-300">
-                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md">IMDb 7.8</span>
-                                <span>2024</span>
+                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md text-xs">IMDb 7.8</span>
+                                <span class="text-xs">2024</span>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="movie-card bg-white rounded-md shadow-md overflow-hidden">
                     <div class="relative">
-                        <img src="https://image.tmdb.org/t/p/w500/movie_poster2.jpg" alt="Movie Poster" class="w-full h-auto">
+                        <img src="https://placehold.co/200x300/777/ccc?text=Movie+2" alt="Movie Poster" class="w-full h-auto">
                         <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-3">
                             <h3 class="text-lg font-semibold mb-1 truncate text-white">Another Movie Title</h3>
                             <div class="flex items-center space-x-2 text-sm text-gray-300">
-                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md">IMDb 6.9</span>
-                                <span>2023</span>
+                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md text-xs">IMDb 6.9</span>
+                                <span class="text-xs">2023</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                </div>
+                 </div>
         </div>
     </section>
 
     <section class="py-10 bg-gray-200">
         <div class="container mx-auto px-4">
             <h2 class="text-2xl font-semibold mb-4 jayhawk-yellow">Popular TV Shows</h2>
-            <div class="scroll-container flex space-x-4">
-                <div class="movie-card bg-white rounded-md shadow-md overflow-hidden">
+            <div class="scroll-container flex space-x-4 pb-4"> <div class="movie-card bg-white rounded-md shadow-md overflow-hidden">
                     <div class="relative">
-                        <img src="https://image.tmdb.org/t/p/w500/tv_show_poster1.jpg" alt="TV Show Poster" class="w-full h-auto">
+                        <img src="https://placehold.co/200x300/888/ccc?text=TV+Show+1" alt="TV Show Poster" class="w-full h-auto">
                         <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-3">
                             <h3 class="text-lg font-semibold mb-1 truncate text-white">TV Show Title 1</h3>
                             <div class="flex items-center space-x-2 text-sm text-gray-300">
-                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md">IMDb 8.2</span>
-                                <span>2 Seasons</span>
+                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md text-xs">IMDb 8.2</span>
+                                <span class="text-xs">2 Seasons</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="movie-card bg-white rounded-md shadow-md overflow-hidden">
+                 <div class="movie-card bg-white rounded-md shadow-md overflow-hidden">
                     <div class="relative">
-                        <img src="https://image.tmdb.org/t/p/w500/tv_show_poster2.jpg" alt="TV Show Poster" class="w-full h-auto">
+                        <img src="https://placehold.co/200x300/999/ccc?text=TV+Show+2" alt="TV Show Poster" class="w-full h-auto">
                         <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-3">
                             <h3 class="text-lg font-semibold mb-1 truncate text-white">Another Great Show</h3>
                             <div class="flex items-center space-x-2 text-sm text-gray-300">
-                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md">IMDb 7.5</span>
-                                <span>5 Seasons</span>
+                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md text-xs">IMDb 7.5</span>
+                                <span class="text-xs">5 Seasons</span>
                             </div>
                         </div>
                     </div>
@@ -191,111 +178,167 @@
     </footer>
 
     <script>
-        const trendingMoviesSection = document.getElementById('trending-movies-section');
+      // Assume MovieFetcher class is defined elsewhere (e.g., in main.js or another script loaded before this)
+      // const movieFetcher = new MovieFetcher('YOUR_API_KEY'); // Replace with your actual key/logic
 
-        function checkVisibility() {
-            const rect = trendingMoviesSection.getBoundingClientRect();
-            const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
+      // --- Mock MovieFetcher for Demonstration ---
+      class MovieFetcher {
+          constructor(apiKey) {
+              this.apiKey = apiKey; // In a real scenario, use this key
+              console.log("Mock MovieFetcher initialized with key:", apiKey);
+          }
+          async getMovie(id) {
+              console.log("Fetching movie with ID (mock):", id);
+              // Simulate API call delay
+              await new Promise(resolve => setTimeout(resolve, 500));
+              // Return mock data - replace with actual API call
+              if (id === 'tt1375666') { // Example: Inception
+                  return {
+                      title: "Inception",
+                      imDbRating: "8.8",
+                      // Use a real, accessible image URL for testing
+                      image: "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+                      // Add other relevant fields if needed
+                  };
+              } else {
+                  return null; // Simulate movie not found
+              }
+          }
+      }
+      // --- End Mock MovieFetcher ---
 
-            if (isVisible && !trendingMoviesSection.classList.contains('active')) {
-                trendingMoviesSection.classList.add('active');
-            }
-        }
 
-        // Check on initial load and on scroll
-        checkVisibility();
-        window.addEventListener('scroll', checkVisibility);
+      // Ensure the DOM is fully loaded before running the script
+      document.addEventListener('DOMContentLoaded', (event) => {
+          const movieFetcher = new MovieFetcher('83392b0'); // Use your actual API key or logic
+
+          async function loadMovie() {
+              // Use a default or example movie ID if needed
+              const exampleMovieId = 'tt1375666'; // Inception
+              const movie = await movieFetcher.getMovie(exampleMovieId);
+              console.log("Movie data received:", movie); // Check console
+
+              const movieBgDiv = document.querySelector('#movie-bg');
+              const movieTitleEl = document.querySelector('#movie-title');
+              const movieRatingEl = document.querySelector('#movie-rating');
+              const moviePosterEl = document.querySelector('#movie-poster');
+
+              if (movie && movieBgDiv) { // Check if movieBgDiv exists
+                  if (movie.title && movieTitleEl) movieTitleEl.textContent = movie.title;
+                  if (movie.imDbRating && movieRatingEl) movieRatingEl.textContent = `IMDb ${movie.imDbRating}`;
+                  if (movie.image && moviePosterEl) moviePosterEl.src = movie.image;
+
+                  // Set background image
+                  if (movie.image) {
+                      movieBgDiv.style.backgroundImage = `url('${movie.image}')`; // Use quotes for URL
+                      console.log("Set background image to:", movie.image);
+                  } else {
+                      console.log("Movie data did not contain an image URL.");
+                  }
+              } else {
+                  console.error("Failed to load movie data or #movie-bg element not found.");
+                  // Optionally set default text if loading fails
+                  if(movieTitleEl) movieTitleEl.textContent = "Movie Not Found";
+                  if(movieRatingEl) movieRatingEl.textContent = "IMDb N/A";
+                  if(moviePosterEl) moviePosterEl.src = "https://placehold.co/256x384/cc0000/ffffff?text=Error"; // Error placeholder
+              }
+          }
+
+          loadMovie();
+
+          // Fade-in logic for trending section
+          const trendingMoviesSection = document.getElementById('trending-movies-section');
+          function checkVisibility() {
+              if (!trendingMoviesSection) return; // Exit if element not found
+              const rect = trendingMoviesSection.getBoundingClientRect();
+              const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
+
+              if (isVisible && !trendingMoviesSection.classList.contains('active')) {
+                  trendingMoviesSection.classList.add('active');
+              }
+          }
+          // Check on initial load and on scroll
+          checkVisibility();
+          window.addEventListener('scroll', checkVisibility);
+
+
+          // Search suggestions logic
+          const searchBox = document.getElementById('search-box');
+          const suggestionsList = document.getElementById('suggestions-list');
+
+          // Example movie data for suggestions (replace with actual data source/API)
+          const movieData = [
+              { title: "The Matrix", poster: "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg" },
+              { title: "The Godfather", poster: "https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_SX300.jpg" },
+              { title: "The Dark Knight", poster: "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_SX300.jpg" },
+              { title: "Inception", poster: "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg" },
+              { title: "Interstellar", poster: "https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_SX300.jpg" },
+              { title: "Pulp Fiction", poster: "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_SX300.jpg" },
+              { title: "Forrest Gump", poster: "https://m.media-amazon.com/images/M/MV5BNWIwODRlZTUtY2U3ZS00Yzg1LWJhNzYtMmZiYmEyNmU1NjMzXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg" },
+              { title: "The Shawshank Redemption", poster: "https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2YzZC00NmNlLWJiNDMtZDViZWM2MzIxZDYwXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_SX300.jpg" },
+              { title: "Fight Club", poster: "https://m.media-amazon.com/images/M/MV5BNDIzNDU0YzEtYzE5Ni00ZjlkLTk5ZjgtNjM3NWE4YzA3Nzk3XkEyXkFqcGdeQXVyMjUzOTY1NTc@._V1_SX300.jpg" },
+              { title: "The Lion King", poster: "https://m.media-amazon.com/images/M/MV5BYTYxNGMyZTYtMjE3MS00MzNjLWFjNmYtMDk3N2FmM2JiM2M1XkEyXkFqcGdeQXVyNjY5NDU4NzI@._V1_SX300.jpg" }
+          ];
+
+          if (searchBox && suggestionsList) { // Ensure elements exist
+            searchBox.addEventListener('input', () => {
+                const inputVal = searchBox.value.toLowerCase();
+                suggestionsList.innerHTML = ''; // Clear previous suggestions
+
+                if (inputVal === '') {
+                    suggestionsList.classList.add('hidden');
+                    return;
+                }
+
+                const filtered = movieData.filter(movie =>
+                    movie.title.toLowerCase().includes(inputVal)
+                );
+
+                if (filtered.length === 0) {
+                    suggestionsList.classList.add('hidden');
+                    return;
+                }
+
+                suggestionsList.classList.remove('hidden'); // Show the list
+
+                filtered.forEach(movie => {
+                    const li = document.createElement('li');
+                    li.className = 'px-4 py-2 hover:bg-gray-200 cursor-pointer flex items-center space-x-2';
+
+                    const img = document.createElement('img');
+                    img.src = movie.poster || 'https://placehold.co/32x48/eee/ccc?text=?'; // Use placeholder if no poster
+                    img.alt = movie.title;
+                    img.className = 'w-8 h-12 object-cover rounded';
+                    img.onerror = function() { this.src='https://placehold.co/32x48/eee/ccc?text=?'; }; // Handle image errors
+
+                    const span = document.createElement('span');
+                    span.textContent = movie.title;
+
+                    li.appendChild(img);
+                    li.appendChild(span);
+
+                    li.addEventListener('click', () => {
+                        searchBox.value = movie.title; // Set input value on click
+                        suggestionsList.classList.add('hidden'); // Hide suggestions
+                        // Optionally trigger search or load details here
+                    });
+
+                    suggestionsList.appendChild(li);
+                });
+            });
+
+             // Hide suggestions when clicking outside
+            document.addEventListener('click', (event) => {
+                if (!searchBox.contains(event.target) && !suggestionsList.contains(event.target)) {
+                    suggestionsList.classList.add('hidden');
+                }
+            });
+          } else {
+              console.error("Search box or suggestions list element not found.");
+          }
+
+      }); // End DOMContentLoaded listener
+
     </script>
-<script>
-    const searchBox = document.getElementById('search-box');
-    const suggestionsList = document.getElementById('suggestions-list');
-  
-    const movieData = [
-  {
-    title: "The Matrix",
-    poster: "https://image.tmdb.org/t/p/w200/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
-  },
-  {
-    title: "The Godfather",
-    poster: "https://image.tmdb.org/t/p/w200/d4KNaTrltq6bpkFS01pYtyXa09m.jpg"
-  },
-  {
-    title: "The Dark Knight",
-    poster: "https://image.tmdb.org/t/p/w200/qJ2tW6WMUDux911r6m7haRef0WH.jpg"
-  },
-  {
-    title: "Inception",
-    poster: "https://image.tmdb.org/t/p/w200/edv5CZvWj09upOsy2Y6IwDhK8bt.jpg"
-  },
-  {
-    title: "Interstellar",
-    poster: "https://image.tmdb.org/t/p/w200/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
-  },
-  {
-    title: "Pulp Fiction",
-    poster: "https://image.tmdb.org/t/p/w200/dM2w364MScsjFf8pfMbaWUcWrR.jpg"
-  },
-  {
-    title: "Forrest Gump",
-    poster: "https://image.tmdb.org/t/p/w200/saHP97rTPS5eLmrLQEcANmKrsFl.jpg"
-  },
-  {
-    title: "The Shawshank Redemption",
-    poster: "https://image.tmdb.org/t/p/w200/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg"
-  },
-  {
-    title: "Fight Club",
-    poster: "https://image.tmdb.org/t/p/w200/bptfVGEQuv6vDTIMVCHjJ9Dz8PX.jpg"
-  },
-  {
-    title: "The Lion King",
-    poster: "https://image.tmdb.org/t/p/w200/2PtYdHCdU2V1o3kYJdHJ8p1KdLu.jpg"
-  }
-];
-  
-searchBox.addEventListener('input', () => {
-  const inputVal = searchBox.value.toLowerCase();
-  suggestionsList.innerHTML = '';
-
-  if (inputVal === '') {
-    suggestionsList.classList.add('hidden');
-    return;
-  }
-
-  const filtered = movieData.filter(movie => 
-    movie.title.toLowerCase().includes(inputVal)
-  );
-
-  if (filtered.length === 0) {
-    suggestionsList.classList.add('hidden');
-    return;
-  }
-
-  suggestionsList.classList.remove('hidden'); // 🔥 Unhide the list here
-
-  filtered.forEach(movie => {
-    const li = document.createElement('li');
-    li.className = 'px-4 py-2 hover:bg-gray-200 cursor-pointer flex items-center space-x-2';
-
-    const img = document.createElement('img');
-    img.src = movie.poster;
-    img.alt = movie.title;
-    img.className = 'w-8 h-12 object-cover rounded';
-
-    const span = document.createElement('span');
-    span.textContent = movie.title;
-
-    li.appendChild(img);
-    li.appendChild(span);
-
-    li.addEventListener('click', () => {
-      searchBox.value = movie.title;
-      suggestionsList.classList.add('hidden');
-    });
-
-    suggestionsList.appendChild(li);
-  });
-});
-  </script>
-</body>
+    </body>
 </html>
