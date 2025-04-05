@@ -1,25 +1,84 @@
-import React, { useState, useEffect } from 'react';
+  const fetchReviews = async (imdbID) => {
+    try {
+      const imdbUrl = `https://www.imdb.com/title/${imdbID}/reviews`;
+      const response = await fetch('/scrape', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: imdbUrl }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch reviews');
+      }
+
+      const reviewsData = await response.json();
+      return reviewsData.map(review => review.text).filter(review => review); // Extract and filter review texts
+
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      setError('Failed to fetch reviews. ' + error.message); // Display error from server
+      return [];
+    }
+  };import React, { useState, useEffect } from 'react';
 
 const API_KEY = '83392b0';
 const BASE_URL = 'https://www.omdbapi.com/';
 
-// --- Helper Function for AI Summary (Simulated) ---
-function generateAiSummary(reviews) {
-  // Basic simulation: Join first few reviews and add a witty comment.
-  // A real implementation would use NLP/LLM.
-  const commonThemes = reviews.slice(0, 2).join(' '); // Very basic commonality
-  const wittyResponses = [
-    "So, basically, critics loved it, but bring popcorn... and maybe a notepad.",
-    "Seems like a winner! Just don't blame us if you get addicted.",
-    "The consensus? It's brilliant. Prepare for your mind to be blown (or just mildly entertained).",
-    "Highly recommended, unless you *hate* things that are awesome.",
-  ];
-  const randomWitty = wittyResponses[Math.floor(Math.random() * wittyResponses.length)];
+// --- Helper Function for AI Summary (using Gemini API) ---
+async function generateAiSummary(reviews) {
+  const apiKey = process.env.GEMINI_API_KEY; // Get your Gemini API key
 
-  return {
-    summary: `Common sentiments suggest: "${commonThemes}" Overall, it's highly regarded.`,
-    witty: randomWitty
-  };
+  if (!apiKey) {
+    return {
+      summary: "Error: Gemini API key not found. Check your environment variables.",
+      witty: "",
+    };
+  }
+
+  try {
+    const prompt = `**Prompt:** You are an advanced AI tasked with generating witty, savage, funny, and interesting remarks based on movie reviews.Your input will include data from the IMDb and Metacritic APIs, specifically the review scores and summary of each movie.1.**Context Understanding**: - Analyze the review score provided (on a scale of 0-100).- Understand the tone of the reviews: Are they generally positive, negative, or mixed? 2.**Creativity in Response**: - Generate a remark that aligns with the review score: - If the score is between 85-100, create a highly positive and humorous remark.- If the score is between 70-84, generate a witty and mildly sarcastic comment.- If the score is between 50-69, produce a humorous yet critical remark.- If the score is below 50, craft a savage and funny critique.3.**Language and Style**: - Use a fun, engaging, and conversational tone.- Incorporate pop culture references, puns, or wordplay where appropriate.- Ensure the remark is concise, ideally no longer than 50 words.4.**Output Format**: - Provide the remark in a clear and easy-to-read format.- Include a brief statement of the review score and the tone of the original reviews as context for the remark.**Example Input**: - Review Score: 88 - Review Summary: "An exhilarating masterpiece that pushes boundaries." **Example Output**: "An exhilarating masterpiece indeed!If this film were a rollercoaster, I'd be screaming in delight while holding onto my popcorn for dear life!" **Notes**: - Always ensure the remark is original and does not directly copy any phrases or sentences from the reviews.- Maintain a balance between humor and respect for the creators of the film.**Prompt:** You are an advanced AI tasked with generating witty, savage, funny, and interesting remarks based on movie reviews.Your input will include data from the IMDb and Metacritic APIs, specifically the review scores and summary of each movie.1.**Context Understanding**: - Analyze the review score provided (on a scale of 0-100).- Understand the tone of the reviews: Are they generally positive, negative, or mixed? 2.**Creativity in Response**: - Generate a remark that aligns with the review score: - If the score is between 85-100, create a highly positive and humorous remark.- If the score is between 70-84, generate a witty and mildly sarcastic comment.- If the score is between 50-69, produce a humorous yet critical remark.- If the score is below 50, craft a savage and funny critique.3.**Language and Style**: - Use a fun, engaging, and conversational tone.- Incorporate pop culture references, puns, or wordplay where appropriate.- Ensure the remark is concise, ideally no longer than 50 words.4.**Output Format**: - Provide the remark in a clear and easy-to-read format.- Include a brief statement of the review score and the tone of the original reviews as context for the remark.**Example Input**: - Review Score: 88 - Review Summary: "An exhilarating masterpiece that pushes boundaries." **Example Output**: "An exhilarating masterpiece indeed!If this film were a rollercoaster, I'd be screaming in delight while holding onto my popcorn for dear life!" **Notes**: - Always ensure the remark is original and does not directly copy any phrases or sentences from the reviews.- Maintain a balance between humor and respect for the creators of the film.:\n\n${reviews.join('\n\n')}`;
+
+    const response = await fetch(
+      "https://api.gemini.google.com/v1/completions", // Gemini API endpoint
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "text-bison-001", // Or another suitable Gemini model
+          prompt: prompt,
+          max_output_tokens: 100, // Adjust as needed
+          temperature: 0.2,       // Adjust for creativity vs. conciseness
+          top_p: 0.95,           // Adjust for sampling diversity
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.choices && data.choices[0] && data.choices[0].text) {
+      const summary = data.choices[0].text.trim();
+      const wittyResponses = [ /* ... (your existing witty responses) */ ];
+      const randomWitty = wittyResponses[Math.floor(Math.random() * wittyResponses.length)];
+      return { summary, witty: randomWitty };
+    } else {
+      return {
+        summary: "Error: Could not generate a summary. Check the API response.",
+        witty: "",
+      };
+    }
+  } catch (error) {
+    console.error("Error calling Gemini API:", error);
+    return {
+      summary: "Error: Failed to call Gemini API.",
+      witty: "",
+    };
+  }
 }
 
 // Simple Icon Placeholder (replace with actual icons like Lucide)
@@ -80,8 +139,8 @@ function App() {
       
       if (data.Response === 'True') {
         setSelectedItem(data);
-        // Generate AI summary based on the plot
-        setAiResponse(generateAiSummary([data.Plot]));
+        const reviews = await fetchReviews(data.imdbID);
+        setAiResponse(generateAiSummary(reviews));
       } else {
         setError('Failed to fetch movie details');
       }
