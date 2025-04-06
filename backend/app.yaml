@@ -1,0 +1,14 @@
+runtime: python39
+env: standard
+instance_class: F1
+
+entrypoint: gunicorn -b :$PORT server:app
+
+handlers:
+- url: /.*
+  script: auto
+  secure: always
+
+automatic_scaling:
+  min_instances: 1
+  max_instances: 10 
