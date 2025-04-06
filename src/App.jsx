@@ -1,35 +1,35 @@
-  const fetchReviews = async (imdbID) => {
-    try {
-      const imdbUrl = `https://www.imdb.com/title/${imdbID}/reviews`;
-      const response = await fetch('/scrape', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url: imdbUrl }),
-      });
+import { useState } from "react";
+import { useEffect } from "react";  
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to fetch reviews');
-      }
+const fetchReviews = async (imdbID) => {
+  try {
+    const imdbUrl = `https://www.imdb.com/title/${imdbID}/reviews`;
+    const response = await fetch('/scrape', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url: imdbUrl }),
+    });
 
-      const reviewsData = await response.json();
-      return reviewsData.map(review => review.text).filter(review => review); // Extract and filter review texts
-
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-      setError('Failed to fetch reviews. ' + error.message); // Display error from server
-      return [];
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to fetch reviews');
     }
-  };import React, { useState, useEffect } from 'react';
 
-const API_KEY = process.env.OMDB_API_KEY;
-const BASE_URL = 'https://www.omdbapi.com/';
+    const reviewsData = await response.json();
+    return reviewsData.map(review => review.text).filter(review => review); // Extract and filter review texts
+
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    setError('Failed to fetch reviews. ' + error.message); // Display error from server
+    return [];
+  }
+};
 
 // --- Helper Function for AI Summary (using Gemini API) ---
 async function generateAiSummary(reviews) {
-  const apiKey = process.env.GEMINI_API_KEY; // Get your Gemini API key
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY; // Get your Gemini API key
 
   if (!apiKey) {
     return {
@@ -109,7 +109,7 @@ function App() {
       setError(null);
 
       try {
-        const response = await fetch(`${BASE_URL}?apikey=${API_KEY}&s=${encodeURIComponent(searchTerm)}`);
+        const response = await fetch(`https://www.omdbapi.com/?apikey=${import.meta.env.VITE_OMDB_API_KEY}&s=${encodeURIComponent(searchTerm)}`);
         const data = await response.json();
 
         if (data.Response === 'True') {
@@ -134,7 +134,7 @@ function App() {
   const handleSelect = async (item) => {
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}?apikey=${API_KEY}&i=${item.imdbID}&plot=full`);
+      const response = await fetch(`https://www.omdbapi.com/?apikey=${import.meta.env.VITE_OMDB_API_KEY}&i=${item.imdbID}&plot=full`);
       const data = await response.json();
       
       if (data.Response === 'True') {
