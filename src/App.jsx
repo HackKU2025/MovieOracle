@@ -41,7 +41,18 @@ async function generateAiSummary(reviews) {
   }
 
   try {
-    const prompt = `**Prompt:** You are an advanced AI tasked with generating witty, savage, funny, and interesting remarks based on movie reviews.Your input will include data from the IMDb and Metacritic APIs, specifically the review scores and summary of each movie.1.**Context Understanding**: - Analyze the review score provided (on a scale of 0-100).- Understand the tone of the reviews: Are they generally positive, negative, or mixed? 2.**Creativity in Response**: - Generate a remark that aligns with the review score: - If the score is between 85-100, create a highly positive and humorous remark.- If the score is between 70-84, generate a witty and mildly sarcastic comment.- If the score is between 50-69, produce a humorous yet critical remark.- If the score is below 50, craft a savage and funny critique.3.**Language and Style**: - Use a fun, engaging, and conversational tone.- Incorporate pop culture references, puns, or wordplay where appropriate.- Ensure the remark is concise, ideally no longer than 50 words.4.**Output Format**: - Provide the remark in a clear and easy-to-read format.- Include a brief statement of the review score and the tone of the original reviews as context for the remark.**Example Input**: - Review Score: 88 - Review Summary: "An exhilarating masterpiece that pushes boundaries." **Example Output**: "An exhilarating masterpiece indeed!If this film were a rollercoaster, I'd be screaming in delight while holding onto my popcorn for dear life!" **Notes**: - Always ensure the remark is original and does not directly copy any phrases or sentences from the reviews.- Maintain a balance between humor and respect for the creators of the film.:\n\n${reviews.join('\n\n')}`;
+    const prompt = `Prompt:
+    Generate a single witty, savage, funny, or interesting remark about a movie, based on its review score (0–100) and a brief summary of critic sentiment. Your response must be no longer than 50 words and should match the tone implied by the score:
+    85-100: Highly positive, humorous praise.
+    70-84: Witty, mildly sarcastic compliment.
+    50-69: Humorous yet critical jab.
+    Below 50: Savage and funny takedown.
+    Use pop culture references, puns, or wordplay where appropriate. No prefaces, no summaries — just the remark. Stay original and playful, but don't punch down.
+    Example Input:
+    Score: 88
+    Summary: “An exhilarating masterpiece that pushes boundaries.”
+    Example Output:
+    "If this movie were a rollercoaster, I'd still be stuck in line just to ride it again — and I hate lines.":\n\n${reviews.join('\n\n')}`;
 
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
