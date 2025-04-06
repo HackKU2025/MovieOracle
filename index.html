@@ -37,7 +37,7 @@
 <body class="bg-gray-200 text-gray-800 font-serif">
   <header class="bg-gray-100 bg-opacity-90 backdrop-blur-md sticky top-0 z-50 shadow-md">
     <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
-      <a href="index.html" class="text-xl font-bold jayhawk-yellow">Film Oracle</a>
+      <a href="index.html" class="text-xl font-bold jayhawk-yellow">Media Oracle</a>
       <div class="flex items-center space-x-4">
         <div class="relative">
           <input
@@ -94,7 +94,7 @@
 
   <footer class="bg-gray-100 py-8 text-gray-600 text-sm shadow-inner mt-10">
     <div class="container mx-auto px-4 flex justify-between items-center">
-      <p>&copy; 2025 Film Oracle. All rights reserved.</p>
+      <p>&copy; 2025 Media Oracle. All rights reserved.</p>
       <div class="flex space-x-4">
         <a href="#" class="hover:text-gray-700">Terms of Service</a>
         <a href="#" class="hover:text-gray-700">Privacy Policy</a>
@@ -160,7 +160,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
-  const fetcher = new MovieFetcher('INSERT API HERE');
+  const fetcher = new MovieFetcher('83392b0');
 
   // Fetch Hero Movie (Featured) - The Dark Knight
   const heroMovie = await fetcher.getMovie('tt0468569'); // IMDb ID for The Dark Knight
