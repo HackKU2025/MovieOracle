@@ -42,12 +42,12 @@ async function generateAiSummary(reviews) {
 
   try {
     const prompt = `Prompt:
-    Generate a single witty, savage, funny, or interesting remark about a movie, based on its review score (0-100) and a brief summary of critic sentiment. Your response must be no longer than 50 words and should match the tone implied by the score:
+    Generate a single witty, savage, funny, or interesting remark about a movie, based on its review score (0-100) and a brief summary of critic sentiment. Your response must be no longer than 100 words and should match the tone implied by the score:
     85-100: Highly positive, humorous praise.
     70-84: Witty, mildly sarcastic compliment.
     50-69: Humorous yet critical jab.
     Below 50: Savage and funny takedown.
-    Use pop culture references, puns, or wordplay where appropriate. No prefaces, no summaries — just the remark. Stay original and playful, but don't punch down.
+    Use pop culture references, puns, or wordplay where appropriate. No prefaces, no summaries — just the remark. I also only want the witty remark nothing else. Stay original and playful, but don't punch down.
     Example Input:
     Score: 88
     Summary: “An exhilarating masterpiece that pushes boundaries.”
