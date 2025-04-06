@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useEffect } from "react";  
 
+const API_BASE_URL = 'http://localhost:5000';
+
 const fetchReviews = async (imdbID) => {
   try {
     const imdbUrl = `https://www.imdb.com/title/${imdbID}/reviews`;
-    const response = await fetch('/scrape', {
+    const response = await fetch(`${API_BASE_URL}/scrape`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -29,7 +31,7 @@ const fetchReviews = async (imdbID) => {
 
 // --- Helper Function for AI Summary (using Gemini API) ---
 async function generateAiSummary(reviews) {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY; // Get your Gemini API key
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
   if (!apiKey) {
     return {
@@ -39,33 +41,44 @@ async function generateAiSummary(reviews) {
   }
 
   try {
-    const prompt = `**Prompt:** You are an advanced AI tasked with generating witty, savage, funny, and interesting remarks based on movie reviews.Your input will include data from the IMDb and Metacritic APIs, specifically the review scores and summary of each movie.1.**Context Understanding**: - Analyze the review score provided (on a scale of 0-100).- Understand the tone of the reviews: Are they generally positive, negative, or mixed? 2.**Creativity in Response**: - Generate a remark that aligns with the review score: - If the score is between 85-100, create a highly positive and humorous remark.- If the score is between 70-84, generate a witty and mildly sarcastic comment.- If the score is between 50-69, produce a humorous yet critical remark.- If the score is below 50, craft a savage and funny critique.3.**Language and Style**: - Use a fun, engaging, and conversational tone.- Incorporate pop culture references, puns, or wordplay where appropriate.- Ensure the remark is concise, ideally no longer than 50 words.4.**Output Format**: - Provide the remark in a clear and easy-to-read format.- Include a brief statement of the review score and the tone of the original reviews as context for the remark.**Example Input**: - Review Score: 88 - Review Summary: "An exhilarating masterpiece that pushes boundaries." **Example Output**: "An exhilarating masterpiece indeed!If this film were a rollercoaster, I'd be screaming in delight while holding onto my popcorn for dear life!" **Notes**: - Always ensure the remark is original and does not directly copy any phrases or sentences from the reviews.- Maintain a balance between humor and respect for the creators of the film.**Prompt:** You are an advanced AI tasked with generating witty, savage, funny, and interesting remarks based on movie reviews.Your input will include data from the IMDb and Metacritic APIs, specifically the review scores and summary of each movie.1.**Context Understanding**: - Analyze the review score provided (on a scale of 0-100).- Understand the tone of the reviews: Are they generally positive, negative, or mixed? 2.**Creativity in Response**: - Generate a remark that aligns with the review score: - If the score is between 85-100, create a highly positive and humorous remark.- If the score is between 70-84, generate a witty and mildly sarcastic comment.- If the score is between 50-69, produce a humorous yet critical remark.- If the score is below 50, craft a savage and funny critique.3.**Language and Style**: - Use a fun, engaging, and conversational tone.- Incorporate pop culture references, puns, or wordplay where appropriate.- Ensure the remark is concise, ideally no longer than 50 words.4.**Output Format**: - Provide the remark in a clear and easy-to-read format.- Include a brief statement of the review score and the tone of the original reviews as context for the remark.**Example Input**: - Review Score: 88 - Review Summary: "An exhilarating masterpiece that pushes boundaries." **Example Output**: "An exhilarating masterpiece indeed!If this film were a rollercoaster, I'd be screaming in delight while holding onto my popcorn for dear life!" **Notes**: - Always ensure the remark is original and does not directly copy any phrases or sentences from the reviews.- Maintain a balance between humor and respect for the creators of the film.:\n\n${reviews.join('\n\n')}`;
+    const prompt = `**Prompt:** You are an advanced AI tasked with generating witty, savage, funny, and interesting remarks based on movie reviews.Your input will include data from the IMDb and Metacritic APIs, specifically the review scores and summary of each movie.1.**Context Understanding**: - Analyze the review score provided (on a scale of 0-100).- Understand the tone of the reviews: Are they generally positive, negative, or mixed? 2.**Creativity in Response**: - Generate a remark that aligns with the review score: - If the score is between 85-100, create a highly positive and humorous remark.- If the score is between 70-84, generate a witty and mildly sarcastic comment.- If the score is between 50-69, produce a humorous yet critical remark.- If the score is below 50, craft a savage and funny critique.3.**Language and Style**: - Use a fun, engaging, and conversational tone.- Incorporate pop culture references, puns, or wordplay where appropriate.- Ensure the remark is concise, ideally no longer than 50 words.4.**Output Format**: - Provide the remark in a clear and easy-to-read format.- Include a brief statement of the review score and the tone of the original reviews as context for the remark.**Example Input**: - Review Score: 88 - Review Summary: "An exhilarating masterpiece that pushes boundaries." **Example Output**: "An exhilarating masterpiece indeed!If this film were a rollercoaster, I'd be screaming in delight while holding onto my popcorn for dear life!" **Notes**: - Always ensure the remark is original and does not directly copy any phrases or sentences from the reviews.- Maintain a balance between humor and respect for the creators of the film.:\n\n${reviews.join('\n\n')}`;
 
     const response = await fetch(
-      "https://api.gemini.google.com/v1/completions", // Gemini API endpoint
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+          "x-goog-api-key": apiKey,
         },
         body: JSON.stringify({
-          model: "text-bison-001", // Or another suitable Gemini model
-          prompt: prompt,
-          max_output_tokens: 100, // Adjust as needed
-          temperature: 0.2,       // Adjust for creativity vs. conciseness
-          top_p: 0.95,           // Adjust for sampling diversity
+          contents: [{
+            parts: [{
+              text: prompt
+            }]
+          }],
+          generationConfig: {
+            temperature: 0.2,
+            topP: 0.95,
+            topK: 40,
+            maxOutputTokens: 100,
+          }
         }),
       }
     );
 
-    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-    if (data.choices && data.choices[0] && data.choices[0].text) {
-      const summary = data.choices[0].text.trim();
-      const wittyResponses = [ /* ... (your existing witty responses) */ ];
-      const randomWitty = wittyResponses[Math.floor(Math.random() * wittyResponses.length)];
-      return { summary, witty: randomWitty };
+    const data = await response.json();
+    
+    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+      const summary = data.candidates[0].content.parts[0].text.trim();
+      return { 
+        summary: "Here's what the critics are saying:",
+        witty: summary 
+      };
     } else {
       return {
         summary: "Error: Could not generate a summary. Check the API response.",
@@ -94,6 +107,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [aiResponse, setAiResponse] = useState({ summary: '', witty: '' });
+  const [reviews, setReviews] = useState([]);
+  const [analysis, setAnalysis] = useState('');
 
   // Effect to search when search term changes
   useEffect(() => {
@@ -140,12 +155,65 @@ function App() {
       if (data.Response === 'True') {
         setSelectedItem(data);
         const reviews = await fetchReviews(data.imdbID);
-        setAiResponse(generateAiSummary(reviews));
+        const aiResponse = await generateAiSummary(reviews);
+        setAiResponse(aiResponse);
       } else {
         setError('Failed to fetch movie details');
       }
     } catch (err) {
       setError('Failed to fetch movie details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleScrapeReviews = async (imdbUrl) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/scrape`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: imdbUrl }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to scrape reviews');
+      }
+
+      const data = await response.json();
+      setReviews(data);
+      return data;
+    } catch (error) {
+      console.error('Error scraping reviews:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const analyzeReviews = async (reviews) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/analyze`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reviews }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to analyze reviews');
+      }
+
+      const data = await response.json();
+      setAnalysis(data.analysis);
+      return data.analysis;
+    } catch (error) {
+      console.error('Error analyzing reviews:', error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -257,7 +325,8 @@ function App() {
       </footer>
 
       {/* Basic Fade-in Animation Style */}
-      <style jsx global>{`
+      <style>
+        {`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
@@ -265,7 +334,8 @@ function App() {
         .animate-fade-in {
           animation: fadeIn 0.5s ease-out forwards;
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 }
