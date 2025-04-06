@@ -50,5 +50,7 @@ def analyze_reviews():
         return jsonify({'error': f"Analysis failed: {e}"}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    # Get port from environment variable or default to 8080
+    port = int(os.environ.get('PORT', 8080))
+    # Run on all available interfaces
+    app.run(host='0.0.0.0', port=port)
