@@ -24,7 +24,7 @@
     }
   };import React, { useState, useEffect } from 'react';
 
-const API_KEY = '83392b0';
+const API_KEY = process.env.OMDB_API_KEY;
 const BASE_URL = 'https://www.omdbapi.com/';
 
 // --- Helper Function for AI Summary (using Gemini API) ---
