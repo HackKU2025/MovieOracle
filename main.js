@@ -1,21 +1,21 @@
 class MovieFetcher {
-    constructor(apiKey) {
-      this.apiKey = 'apiKey';
-      this.baseUrl = ' http://www.omdbapi.com/?i=tt3896198&apikey=83392b0';
-    }
-  
-    async getMovie(imdbID) {
-      const url = `${this.baseUrl}/${this.apiKey}/${imdbID}`;
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-        return data;
-      } catch (err) {
-        console.error('Failed to fetch movie:', err);
-        return null;
-      }
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.baseUrl = 'http://www.omdbapi.com/?i=tt3896198&apikey=83392b0';
+  }
+
+  async getMovie(imdbID) {
+    const url = `${this.baseUrl}?apikey=${this.apiKey}&i=${imdbID}`;
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      return data;
+    } catch (err) {
+      console.error('Failed to fetch movie:', err);
+      return null;
     }
   }
+}
 
   document.addEventListener('DOMContentLoaded', async () => {
     const fetcher = new MovieFetcher('83392b0');

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,6 +53,7 @@
         }
     </style>
 </head>
+ <!--This is the Search Box-->
 <body class="bg-gray-200 text-gray-800 font-serif">
     <header class="bg-gray-100 bg-opacity-90 backdrop-blur-md sticky top-0 z-50 shadow-md">
         <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
@@ -76,12 +78,14 @@
             </div>
         </nav>
     </header>
-
+<!--This is the hero section-->
     <section class="bg-gradient-to-br from-gray-300 to-gray-100 py-20 md:py-32 relative overflow-hidden">
         <div class="container mx-auto px-4 relative z-10">
-          <img id="movie-poster" class="w-64 rounded-lg shadow-lg mb-4" src="https://placehold.co/256x384/333333/cccccc?text=Loading..." alt="Movie Poster">
-          <h1 id="movie-title" class="text-4xl md:text-6xl font-bold mb-4 jayhawk-yellow">Loading...</h1>
-          <p class="text-lg text-gray-600 mb-6">Loading description...</p>
+            <button onclick="window.location.href='movie-details.html?id={exampleMovieId}'">
+            <img id="movie-poster" class="w-64 rounded-lg shadow-lg mb-4" src="https://placehold.co/256x384/333333/cccccc?text=Loading..." alt="Movie Poster">
+            <h1 id="movie-title" class="text-4xl md:text-6xl font-bold mb-4 jayhawk-yellow">Loading...</h1>
+            </button>
+            <p class="text-lg text-gray-600 mb-6">Loading description...</p>
           <div class="flex items-center space-x-4 mb-6">
             <span id="movie-rating" class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md">IMDb ...</span>
             <span class="text-gray-500">Loading genres...</span>
@@ -89,7 +93,7 @@
           <div class="flex space-x-4">
               <button class="bg-jayhawk-yellow hover-bg-jayhawk-yellow text-gray-900 font-semibold py-3 px-6 rounded-md focus:outline-none focus-ring-jayhawk-yellow">Play Now</button>
               <button class="bg-gray-400 hover:bg-gray-500 text-gray-800 font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow">Add to Watchlist</button>
-              <button onclick="window.location.href='movie-details.html'" class="bg-gray-400 hover:bg-gray-500 text-gray-800 font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow">More Info</button>
+              <button onclick="window.location.href='movie-details.html?id={exampleMovieId}'" class="bg-gray-400 hover:bg-gray-500 text-gray-800 font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow">More Info</button>
           </div>
         </div>
 
@@ -98,6 +102,7 @@
         <div id="movie-bg" class="absolute top-0 left-0 w-full h-full bg-cover bg-center z-[-1]"></div>
 
     </section>
+    <!--Trending Movies section-->
     <section id="trending-movies-section" class="py-10 bg-gray-200 fade-in">
         <div class="container mx-auto px-4">
             <h2 class="text-2xl font-semibold mb-4 jayhawk-yellow">Trending Movies</h2>
@@ -106,9 +111,17 @@
                         <img src="https://placehold.co/200x300/666/ccc?text=Movie+1" alt="Movie Poster" class="w-full h-auto">
                         <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-3">
-                          <button onclick="window.location.href='movie-details.html'">
-                            <h3 class="text-lg font-semibold mb-1 truncate text-white">Movie Title 1</h3>
-                          </button>
+                            <a href="movie-details.html?id=tt0468569">
+                                <img src="https://placehold.co/200x300/666/ccc?text=Movie+1" alt="Movie Poster" class="w-full h-auto">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
+                                <div class="absolute bottom-0 left-0 right-0 p-3">
+                                  <h3 class="text-lg font-semibold mb-1 truncate text-white">The Dark Knight</h3>
+                                  <div class="flex items-center space-x-2 text-sm text-gray-300">
+                                    <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md text-xs">IMDb 9.0</span>
+                                    <span class="text-xs">2008</span>
+                                  </div>
+                                </div>
+                              </a>
                             <div class="flex items-center space-x-2 text-sm text-gray-300">
                                 <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md text-xs">IMDb 7.8</span>
                                 <span class="text-xs">2024</span>
@@ -132,7 +145,7 @@
                  </div>
         </div>
     </section>
-
+<!--this is the TV show part-->
     <section class="py-10 bg-gray-200">
         <div class="container mx-auto px-4">
             <h2 class="text-2xl font-semibold mb-4 jayhawk-yellow">Popular TV Shows</h2>
@@ -165,7 +178,7 @@
                 </div>
         </div>
     </section>
-
+<!--Footer Note-->
     <footer class="bg-gray-100 py-8 text-gray-600 text-sm shadow-inner">
         <div class="container mx-auto px-4 flex justify-between items-center">
             <p>&copy; 2025 Film Oracle. All rights reserved.</p>
@@ -321,6 +334,7 @@
                         searchBox.value = movie.title; // Set input value on click
                         suggestionsList.classList.add('hidden'); // Hide suggestions
                         // Optionally trigger search or load details here
+                        window.location.href='movie-details.html?id={exampleMovieId}'
                     });
 
                     suggestionsList.appendChild(li);
@@ -330,7 +344,7 @@
              // Hide suggestions when clicking outside
             document.addEventListener('click', (event) => {
                 if (!searchBox.contains(event.target) && !suggestionsList.contains(event.target)) {
-                    suggestionsList.classList.add('hidden');
+                    suggestionsList.classList.add('hidden')
                 }
             });
           } else {
