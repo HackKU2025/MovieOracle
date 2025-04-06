@@ -4,6 +4,7 @@ from flask_cors import CORS
 from imdb_review_scraper import ImdbReviewScraper
 from dotenv import load_dotenv
 import google.generativeai as genai
+import requests
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -13,6 +14,10 @@ CORS(app)  # Enable CORS for all routes
 # Configure Gemini API
 genai.configure(api_key=os.getenv('VITE_GEMINI_API_KEY'))
 model = genai.GenerativeModel('gemini-pro')
+
+# OMDB API configuration
+OMDB_API_KEY = os.getenv('VITE_OMDB_API_KEY')
+OMDB_BASE_URL = "http://www.omdbapi.com/"
 
 @app.route('/scrape', methods=['POST'])
 def scrape_route():
@@ -48,6 +53,25 @@ def analyze_reviews():
         
     except Exception as e:
         return jsonify({'error': f"Analysis failed: {e}"}), 500
+
+@app.route('/api/search', methods=['GET'])
+def search_movies():
+    try:
+        query = request.args.get('s', '')
+        if not query:
+            return jsonify({'error': 'Search query is required'}), 400
+            
+        params = {
+            'apikey': OMDB_API_KEY,
+            's': query
+        }
+        
+        response = requests.get(OMDB_BASE_URL, params=params)
+        response.raise_for_status()
+        return jsonify(response.json())
+        
+    except Exception as e:
+        return jsonify({'error': f"Search failed: {e}"}), 500
 
 if __name__ == '__main__':
     # Get port from environment variable or default to 8080
