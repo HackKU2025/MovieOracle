@@ -1,358 +1,284 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Film Oracle - Your Ultimate Movie Guide</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
-    <style>
-        /* Custom styles for horizontal scrolling */
-        .scroll-container {
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
-        }
-
-        .movie-card {
-            flex: 0 0 auto; /* Don't grow or shrink, maintain width */
-            width: 200px; /* Adjust as needed */
-            margin-right: 10px;
-        }
-
-        /* Initial state for fade-in */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(20px); /* Optional: slight slide-up effect */
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-        }
-
-        .fade-in.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Define Jayhawk Yellow as a Tailwind CSS color */
-        /* Note: Custom colors are better defined in tailwind.config.js, but for CDN use: */
-        .jayhawk-yellow {
-            color: #ffc82d; /* KU Yellow */
-        }
-        .bg-jayhawk-yellow {
-            background-color: #ffc82d; /* KU Yellow */
-        }
-        .hover-bg-jayhawk-yellow:hover {
-            background-color: #e6b329; /* Slightly darker shade for hover */
-        }
-        .focus-ring-jayhawk-yellow:focus-visible {
-            outline: 2px solid #e6b329;
-            outline-offset: 2px;
-        }
-        /* Ensure body takes full height if needed */
-        html, body {
-            height: 100%;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Movie Details - Film Oracle</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <style>
+    .jayhawk-yellow {
+      color: #ffc82d;
+    }
+    .bg-jayhawk-yellow {
+      background-color: #ffc82d;
+    }
+    .hover-bg-jayhawk-yellow:hover {
+      background-color: #e6b329;
+    }
+    .focus-ring-jayhawk-yellow:focus-visible {
+      outline: 2px solid #e6b329;
+      outline-offset: 2px;
+    }
+    .oracle-insight {
+      background-color: #f3f4f6;
+      border: 1px solid #ffc82d;
+      padding: 0.75rem;
+      border-radius: 0.375rem;
+      margin-top: 1rem;
+      color: #4b5563;
+    }
+    .oracle-insight-title {
+      font-weight: 600;
+      color: #ffc82d;
+      margin-bottom: 0.5rem;
+    }
+  </style>
 </head>
- <!--This is the Search Box-->
 <body class="bg-gray-200 text-gray-800 font-serif">
-    <header class="bg-gray-100 bg-opacity-90 backdrop-blur-md sticky top-0 z-50 shadow-md">
-        <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="#" class="text-xl font-bold jayhawk-yellow">Film Oracle</a>
-            <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <input
-                      id="search-box"
-                      type="text"
-                      placeholder="Search movies..."
-                      class="bg-gray-300 text-gray-700 rounded-md px-3 py-2 w-64 focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow"
-                      autocomplete="off"
-                    >
-                    <ul
-                      id="suggestions-list"
-                      class="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-md shadow-md mt-1 z-50 hidden max-h-60 overflow-y-auto"
-                    ></ul>
-                  </div>
-                <a href="#" class="hover:text-gray-600">Watchlist</a>
-                <a href="#" class="hover:text-gray-600">Sign In</a>
-                <button class="bg-jayhawk-yellow hover-bg-jayhawk-yellow text-gray-900 font-semibold py-2 px-4 rounded-md focus:outline-none focus-ring-jayhawk-yellow">Sign Up</button>
-            </div>
-        </nav>
-    </header>
-<!--This is the hero section-->
-    <section class="bg-gradient-to-br from-gray-300 to-gray-100 py-20 md:py-32 relative overflow-hidden">
-        <div class="container mx-auto px-4 relative z-10">
-            <button onclick="window.location.href='movie-details.html?id={exampleMovieId}'">
-            <img id="movie-poster" class="w-64 rounded-lg shadow-lg mb-4" src="https://placehold.co/256x384/333333/cccccc?text=Loading..." alt="Movie Poster">
-            <h1 id="movie-title" class="text-4xl md:text-6xl font-bold mb-4 jayhawk-yellow">Loading...</h1>
-            </button>
-            <p class="text-lg text-gray-600 mb-6">Loading description...</p>
-          <div class="flex items-center space-x-4 mb-6">
-            <span id="movie-rating" class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md">IMDb ...</span>
-            <span class="text-gray-500">Loading genres...</span>
-          </div>
-          <div class="flex space-x-4">
-              <button class="bg-jayhawk-yellow hover-bg-jayhawk-yellow text-gray-900 font-semibold py-3 px-6 rounded-md focus:outline-none focus-ring-jayhawk-yellow">Play Now</button>
-              <button class="bg-gray-400 hover:bg-gray-500 text-gray-800 font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow">Add to Watchlist</button>
-              <button onclick="window.location.href='movie-details.html?id={exampleMovieId}'" class="bg-gray-400 hover:bg-gray-500 text-gray-800 font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus-ring-jayhawk-yellow">More Info</button>
-          </div>
+  <header class="bg-gray-100 bg-opacity-90 backdrop-blur-md sticky top-0 z-50 shadow-md">
+    <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <a href="index.html" class="text-xl font-bold jayhawk-yellow">Film Oracle</a>
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <input
+            type="text"
+            id="search-box"
+            placeholder="Search movies..."
+            class="bg-gray-300 text-gray-700 rounded-md px-3 py-2 w-64 focus:outline-none focus-ring-2 focus-ring-jayhawk-yellow"
+            autocomplete="off"
+          />
+          <ul class="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-md shadow-md mt-1 z-50 hidden max-h-60 overflow-y-auto" id="suggestions-list"></ul>
         </div>
+        <a href="#" class="hover:text-gray-600">Watchlist</a>
+        <a href="#" class="hover:text-gray-600">Sign In</a>
+        <button class="bg-jayhawk-yellow hover-bg-jayhawk-yellow text-gray-900 font-semibold py-2 px-4 rounded-md focus:outline-none focus-ring-jayhawk-yellow">Sign Up</button>
+      </div>
+    </nav>
+  </header>
 
-        <div class="absolute top-0 left-0 w-full h-full bg-black opacity-20 z-0"></div>
-
-        <div id="movie-bg" class="absolute top-0 left-0 w-full h-full bg-cover bg-center z-[-1]"></div>
-
+  <main class="container mx-auto px-4 py-10">
+    <!-- Hero Section -->
+    <section id="hero" class="bg-white rounded-lg shadow-md overflow-hidden mb-10">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 p-6">
+        <div class="md:col-span-1 flex justify-center">
+          <a id="hero-link" href="#" class="block">
+            <img id="hero-poster" src="https://via.placeholder.com/300x450" alt="Featured Movie Poster" class="rounded-md shadow-lg"/>
+          </a>
+        </div>
+        <div class="md:col-span-2">
+          <h1 id="hero-title" class="text-3xl font-bold mb-2 jayhawk-yellow">Loading...</h1>
+          <p class="text-gray-600 mb-1">Director: <span id="hero-director" class="font-semibold">Loading...</span></p>
+          <p class="text-gray-600 mb-3">Published Year: <span id="hero-year" class="font-semibold">Loading...</span></p>
+          <h2 class="text-xl font-semibold mb-2 jayhawk-yellow">Overview</h2>
+          <p id="hero-overview" class="text-gray-700">Loading...</p>
+        </div>
+      </div>
     </section>
-    <!--Trending Movies section-->
-    <section id="trending-movies-section" class="py-10 bg-gray-200 fade-in">
-        <div class="container mx-auto px-4">
-            <h2 class="text-2xl font-semibold mb-4 jayhawk-yellow">Trending Movies</h2>
-            <div class="scroll-container flex space-x-4 pb-4"> <div class="movie-card bg-white rounded-md shadow-md overflow-hidden">
-                    <div class="relative">
-                        <img src="https://placehold.co/200x300/666/ccc?text=Movie+1" alt="Movie Poster" class="w-full h-auto">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-3">
-                            <a href="movie-details.html?id=tt0468569">
-                                <img src="https://placehold.co/200x300/666/ccc?text=Movie+1" alt="Movie Poster" class="w-full h-auto">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
-                                <div class="absolute bottom-0 left-0 right-0 p-3">
-                                  <h3 class="text-lg font-semibold mb-1 truncate text-white">The Dark Knight</h3>
-                                  <div class="flex items-center space-x-2 text-sm text-gray-300">
-                                    <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md text-xs">IMDb 9.0</span>
-                                    <span class="text-xs">2008</span>
-                                  </div>
-                                </div>
-                              </a>
-                            <div class="flex items-center space-x-2 text-sm text-gray-300">
-                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md text-xs">IMDb 7.8</span>
-                                <span class="text-xs">2024</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="movie-card bg-white rounded-md shadow-md overflow-hidden">
-                    <div class="relative">
-                        <img src="https://placehold.co/200x300/777/ccc?text=Movie+2" alt="Movie Poster" class="w-full h-auto">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-3">
-                            <h3 class="text-lg font-semibold mb-1 truncate text-white">Another Movie Title</h3>
-                            <div class="flex items-center space-x-2 text-sm text-gray-300">
-                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md text-xs">IMDb 6.9</span>
-                                <span class="text-xs">2023</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                 </div>
-        </div>
-    </section>
-<!--this is the TV show part-->
-    <section class="py-10 bg-gray-200">
-        <div class="container mx-auto px-4">
-            <h2 class="text-2xl font-semibold mb-4 jayhawk-yellow">Popular TV Shows</h2>
-            <div class="scroll-container flex space-x-4 pb-4"> <div class="movie-card bg-white rounded-md shadow-md overflow-hidden">
-                    <div class="relative">
-                        <img src="https://placehold.co/200x300/888/ccc?text=TV+Show+1" alt="TV Show Poster" class="w-full h-auto">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-3">
-                            <h3 class="text-lg font-semibold mb-1 truncate text-white">TV Show Title 1</h3>
-                            <div class="flex items-center space-x-2 text-sm text-gray-300">
-                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md text-xs">IMDb 8.2</span>
-                                <span class="text-xs">2 Seasons</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                 <div class="movie-card bg-white rounded-md shadow-md overflow-hidden">
-                    <div class="relative">
-                        <img src="https://placehold.co/200x300/999/ccc?text=TV+Show+2" alt="TV Show Poster" class="w-full h-auto">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-3">
-                            <h3 class="text-lg font-semibold mb-1 truncate text-white">Another Great Show</h3>
-                            <div class="flex items-center space-x-2 text-sm text-gray-300">
-                                <span class="bg-jayhawk-yellow text-gray-900 font-semibold px-2 py-1 rounded-md text-xs">IMDb 7.5</span>
-                                <span class="text-xs">5 Seasons</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                </div>
-        </div>
-    </section>
-<!--Footer Note-->
-    <footer class="bg-gray-100 py-8 text-gray-600 text-sm shadow-inner">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <p>&copy; 2025 Film Oracle. All rights reserved.</p>
-            <div class="flex space-x-4">
-                <a href="#" class="hover:text-gray-700">Terms of Service</a>
-                <a href="#" class="hover:text-gray-700">Privacy Policy</a>
-                <a href="#" class="hover:text-gray-700">Contact Us</a>
-            </div>
-        </div>
-    </footer>
 
-    <script>
-      // Assume MovieFetcher class is defined elsewhere (e.g., in main.js or another script loaded before this)
-      // const movieFetcher = new MovieFetcher('YOUR_API_KEY'); // Replace with your actual key/logic
+    <!-- Trending Movies Section -->
+    <section id="trending-movies" class="mb-10">
+      <h2 class="text-2xl font-semibold mb-4 jayhawk-yellow">Trending Movies</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="trending-movies-list">
+        <!-- Trending movies will be injected here -->
+      </div>
+    </section>
 
-      // --- Mock MovieFetcher for Demonstration ---
-      class MovieFetcher {
-          constructor(apiKey) {
-              this.apiKey = apiKey; // In a real scenario, use this key
-              console.log("Mock MovieFetcher initialized with key:", apiKey);
-          }
-          async getMovie(id) {
-              console.log("Fetching movie with ID (mock):", id);
-              // Simulate API call delay
-              await new Promise(resolve => setTimeout(resolve, 500));
-              // Return mock data - replace with actual API call
-              if (id === 'tt1375666') { // Example: Inception
-                  return {
-                      title: "Inception",
-                      imDbRating: "8.8",
-                      // Use a real, accessible image URL for testing
-                      image: "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-                      // Add other relevant fields if needed
-                  };
-              } else {
-                  return null; // Simulate movie not found
-              }
-          }
+    <!-- TV Shows Section -->
+    <section id="tv-shows" class="mb-10">
+      <h2 class="text-2xl font-semibold mb-4 jayhawk-yellow">Trending TV Shows</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="tv-shows-list">
+        <!-- TV shows will be injected here -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-gray-100 py-8 text-gray-600 text-sm shadow-inner mt-10">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+      <p>&copy; 2025 Film Oracle. All rights reserved.</p>
+      <div class="flex space-x-4">
+        <a href="#" class="hover:text-gray-700">Terms of Service</a>
+        <a href="#" class="hover:text-gray-700">Privacy Policy</a>
+        <a href="#" class="hover:text-gray-700">Contact Us</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    class MovieFetcher {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.baseUrl = 'https://www.omdbapi.com/';
       }
-      // --- End Mock MovieFetcher ---
 
+      async getMovie(imdbID) {
+        const url = `${this.baseUrl}?apikey=${this.apiKey}&i=${imdbID}`;
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          return data;
+        } catch (err) {
+          console.error('Failed to fetch movie:', err);
+          return null;
+        }
+      }
 
-      // Ensure the DOM is fully loaded before running the script
-      document.addEventListener('DOMContentLoaded', (event) => {
-          const movieFetcher = new MovieFetcher('83392b0'); // Use your actual API key or logic
+      async getTrendingMovies() {
+        const url = `${this.baseUrl}?apikey=${this.apiKey}&s=trending&type=movie`;
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          return data.Search || [];
+        } catch (err) {
+          console.error('Failed to fetch trending movies:', err);
+          return [];
+        }
+      }
 
-          async function loadMovie() {
-              // Use a default or example movie ID if needed
-              const exampleMovieId = 'tt1375666'; // Inception
-              const movie = await movieFetcher.getMovie(exampleMovieId);
-              console.log("Movie data received:", movie); // Check console
+      async getTrendingTVShows() {
+        const url = `${this.baseUrl}?apikey=${this.apiKey}&s=trending&type=series`;
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          return data.Search || [];
+        } catch (err) {
+          console.error('Failed to fetch trending TV shows:', err);
+          return [];
+        }
+      }
 
-              const movieBgDiv = document.querySelector('#movie-bg');
-              const movieTitleEl = document.querySelector('#movie-title');
-              const movieRatingEl = document.querySelector('#movie-rating');
-              const moviePosterEl = document.querySelector('#movie-poster');
+      async searchMovies(query) {
+        const url = `${this.baseUrl}?apikey=${this.apiKey}&s=${query}`;
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          return data.Search || [];
+        } catch (err) {
+          console.error('Failed to search movies:', err);
+          return [];
+        }
+      }
+    }
 
-              if (movie && movieBgDiv) { // Check if movieBgDiv exists
-                  if (movie.title && movieTitleEl) movieTitleEl.textContent = movie.title;
-                  if (movie.imDbRating && movieRatingEl) movieRatingEl.textContent = `IMDb ${movie.imDbRating}`;
-                  if (movie.image && moviePosterEl) moviePosterEl.src = movie.image;
+    document.addEventListener('DOMContentLoaded', async () => {
+  const fetcher = new MovieFetcher('83392b0');
 
-                  // Set background image
-                  if (movie.image) {
-                      movieBgDiv.style.backgroundImage = `url('${movie.image}')`; // Use quotes for URL
-                      console.log("Set background image to:", movie.image);
-                  } else {
-                      console.log("Movie data did not contain an image URL.");
-                  }
-              } else {
-                  console.error("Failed to load movie data or #movie-bg element not found.");
-                  // Optionally set default text if loading fails
-                  if(movieTitleEl) movieTitleEl.textContent = "Movie Not Found";
-                  if(movieRatingEl) movieRatingEl.textContent = "IMDb N/A";
-                  if(moviePosterEl) moviePosterEl.src = "https://placehold.co/256x384/cc0000/ffffff?text=Error"; // Error placeholder
-              }
-          }
+  // Fetch Hero Movie (Featured) - The Dark Knight
+  const heroMovie = await fetcher.getMovie('tt0468569'); // IMDb ID for The Dark Knight
+  if (heroMovie && heroMovie.Response === 'True') {
+    document.getElementById('hero-poster').src = heroMovie.Poster;
+    document.getElementById('hero-title').textContent = heroMovie.Title;
+    document.getElementById('hero-director').textContent = heroMovie.Director;
+    document.getElementById('hero-year').textContent = heroMovie.Year;
+    document.getElementById('hero-overview').textContent = heroMovie.Plot;
+    document.getElementById('hero-link').href = `movie-details.html?id=${heroMovie.imdbID}`;
+  }
 
-          loadMovie();
+  // Fetch Trending Movies (Limit to 4)
+  const trendingMovies = await fetcher.getTrendingMovies();
+  const trendingMoviesList = document.getElementById('trending-movies-list');
+  trendingMovies.slice(0, 4).forEach(movie => {
+    const movieCard = document.createElement('div');
+    movieCard.classList.add('bg-white', 'rounded-lg', 'shadow-md', 'overflow-hidden');
+    
+    // Fallback for missing poster
+    const poster = movie.Poster ? movie.Poster : 'https://via.placeholder.com/300x450?text=No+Image';
+    const title = movie.Title ? movie.Title : 'No Title Available';
 
-          // Fade-in logic for trending section
-          const trendingMoviesSection = document.getElementById('trending-movies-section');
-          function checkVisibility() {
-              if (!trendingMoviesSection) return; // Exit if element not found
-              const rect = trendingMoviesSection.getBoundingClientRect();
-              const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
+    movieCard.innerHTML = `
+      <a href="movie-details.html?id=${movie.imdbID}">
+        <img src="${poster}" alt="${title}" class="w-full h-56 object-cover"/>
+      </a>
+      <div class="p-4">
+        <h3 class="text-xl font-semibold text-gray-800">${title}</h3>
+        <p class="text-gray-600">${movie.Year}</p>
+      </div>
+    `;
+    trendingMoviesList.appendChild(movieCard);
+  });
 
-              if (isVisible && !trendingMoviesSection.classList.contains('active')) {
-                  trendingMoviesSection.classList.add('active');
-              }
-          }
-          // Check on initial load and on scroll
-          checkVisibility();
-          window.addEventListener('scroll', checkVisibility);
+  // Fetch Trending TV Shows (Limit to 4)
+  const trendingTVShows = await fetcher.getTrendingTVShows();
+  const tvShowsList = document.getElementById('tv-shows-list');
+  trendingTVShows.slice(0, 4).forEach(show => {
+    const tvShowCard = document.createElement('div');
+    tvShowCard.classList.add('bg-white', 'rounded-lg', 'shadow-md', 'overflow-hidden');
+    
+    // Fallback for missing poster
+    const poster = show.Poster ? show.Poster : 'https://via.placeholder.com/300x450?text=No+Image';
+    const title = show.Title ? show.Title : 'No Title Available';
 
+    tvShowCard.innerHTML = `
+      <a href="movie-details.html?id=${show.imdbID}">
+        <img src="${poster}" alt="${title}" class="w-full h-56 object-cover"/>
+      </a>
+      <div class="p-4">
+        <h3 class="text-xl font-semibold text-gray-800">${title}</h3>
+        <p class="text-gray-600">${show.Year}</p>
+      </div>
+    `;
+    tvShowsList.appendChild(tvShowCard);
+  });
 
-          // Search suggestions logic
-          const searchBox = document.getElementById('search-box');
-          const suggestionsList = document.getElementById('suggestions-list');
+  // Search suggestions logic
+  const searchBox = document.getElementById('search-box');
+  const suggestionsList = document.getElementById('suggestions-list');
 
-          // Example movie data for suggestions (replace with actual data source/API)
-          const movieData = [
-              { title: "The Matrix", poster: "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg" },
-              { title: "The Godfather", poster: "https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_SX300.jpg" },
-              { title: "The Dark Knight", poster: "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_SX300.jpg" },
-              { title: "Inception", poster: "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg" },
-              { title: "Interstellar", poster: "https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_SX300.jpg" },
-              { title: "Pulp Fiction", poster: "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_SX300.jpg" },
-              { title: "Forrest Gump", poster: "https://m.media-amazon.com/images/M/MV5BNWIwODRlZTUtY2U3ZS00Yzg1LWJhNzYtMmZiYmEyNmU1NjMzXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg" },
-              { title: "The Shawshank Redemption", poster: "https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2YzZC00NmNlLWJiNDMtZDViZWM2MzIxZDYwXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_SX300.jpg" },
-              { title: "Fight Club", poster: "https://m.media-amazon.com/images/M/MV5BNDIzNDU0YzEtYzE5Ni00ZjlkLTk5ZjgtNjM3NWE4YzA3Nzk3XkEyXkFqcGdeQXVyMjUzOTY1NTc@._V1_SX300.jpg" },
-              { title: "The Lion King", poster: "https://m.media-amazon.com/images/M/MV5BYTYxNGMyZTYtMjE3MS00MzNjLWFjNmYtMDk3N2FmM2JiM2M1XkEyXkFqcGdeQXVyNjY5NDU4NzI@._V1_SX300.jpg" }
-          ];
+  if (searchBox && suggestionsList) {
+    searchBox.addEventListener('input', async () => {
+      const inputVal = searchBox.value.toLowerCase();
+      suggestionsList.innerHTML = ''; // Clear previous suggestions
 
-          if (searchBox && suggestionsList) { // Ensure elements exist
-            searchBox.addEventListener('input', () => {
-                const inputVal = searchBox.value.toLowerCase();
-                suggestionsList.innerHTML = ''; // Clear previous suggestions
+      if (inputVal === '') {
+        suggestionsList.classList.add('hidden');
+        return;
+      }
 
-                if (inputVal === '') {
-                    suggestionsList.classList.add('hidden');
-                    return;
-                }
+      const filtered = await fetcher.searchMovies(inputVal);
 
-                const filtered = movieData.filter(movie =>
-                    movie.title.toLowerCase().includes(inputVal)
-                );
+      if (filtered.length === 0) {
+        suggestionsList.classList.add('hidden');
+        return;
+      }
 
-                if (filtered.length === 0) {
-                    suggestionsList.classList.add('hidden');
-                    return;
-                }
+      suggestionsList.classList.remove('hidden'); // Show the list
 
-                suggestionsList.classList.remove('hidden'); // Show the list
+      filtered.forEach(movie => {
+        const li = document.createElement('li');
+        li.className = 'px-4 py-2 hover:bg-gray-200 cursor-pointer flex items-center space-x-2';
 
-                filtered.forEach(movie => {
-                    const li = document.createElement('li');
-                    li.className = 'px-4 py-2 hover:bg-gray-200 cursor-pointer flex items-center space-x-2';
+        const img = document.createElement('img');
+        img.src = movie.Poster || 'https://via.placeholder.com/32x48?text=?'; // Use placeholder if no poster
+        img.alt = movie.Title;
+        img.className = 'w-8 h-12 object-cover rounded';
+        img.onerror = function() { this.src='https://via.placeholder.com/32x48?text=?'; };
 
-                    const img = document.createElement('img');
-                    img.src = movie.poster || 'https://placehold.co/32x48/eee/ccc?text=?'; // Use placeholder if no poster
-                    img.alt = movie.title;
-                    img.className = 'w-8 h-12 object-cover rounded';
-                    img.onerror = function() { this.src='https://placehold.co/32x48/eee/ccc?text=?'; }; // Handle image errors
+        const span = document.createElement('span');
+        span.textContent = movie.Title;
 
-                    const span = document.createElement('span');
-                    span.textContent = movie.title;
+        li.appendChild(img);
+        li.appendChild(span);
 
-                    li.appendChild(img);
-                    li.appendChild(span);
+        li.addEventListener('click', () => {
+          searchBox.value = movie.Title; // Set input value on click
+          suggestionsList.classList.add('hidden'); // Hide suggestions
+          // Optionally trigger search or load details here
+          window.location.href = `movie-details.html?id=${movie.imdbID}`;
+        });
 
-                    li.addEventListener('click', () => {
-                        searchBox.value = movie.title; // Set input value on click
-                        suggestionsList.classList.add('hidden'); // Hide suggestions
-                        // Optionally trigger search or load details here
-                        window.location.href='movie-details.html?id={exampleMovieId}'
-                    });
+        suggestionsList.appendChild(li);
+      });
+    });
 
-                    suggestionsList.appendChild(li);
-                });
-            });
-
-             // Hide suggestions when clicking outside
-            document.addEventListener('click', (event) => {
-                if (!searchBox.contains(event.target) && !suggestionsList.contains(event.target)) {
-                    suggestionsList.classList.add('hidden')
-                }
-            });
-          } else {
-              console.error("Search box or suggestions list element not found.");
-          }
-
-      }); // End DOMContentLoaded listener
-
-    </script>
-    </body>
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', (event) => {
+      if (!searchBox.contains(event.target) && !suggestionsList.contains(event.target)) {
+        suggestionsList.classList.add('hidden');
+      }
+    });
+  } else {
+    console.error("Search box or suggestions list element not found.");
+  }
+});
+  </script>
+</body>
 </html>

@@ -42,11 +42,12 @@
         <div class="relative">
           <input
             type="text"
+            id="search-box"
             placeholder="Search movies..."
             class="bg-gray-300 text-gray-700 rounded-md px-3 py-2 w-64 focus:outline-none focus-ring-2 focus-ring-jayhawk-yellow"
             autocomplete="off"
           />
-          <ul class="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-md shadow-md mt-1 z-50 hidden max-h-60 overflow-y-auto"></ul>
+          <ul id="suggestions-list" class="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-md shadow-md mt-1 z-50 hidden max-h-60 overflow-y-auto"></ul>
         </div>
         <a href="#" class="hover:text-gray-600">Watchlist</a>
         <a href="#" class="hover:text-gray-600">Sign In</a>
@@ -113,6 +114,18 @@
           return null;
         }
       }
+
+      async searchMovies(query) {
+        const url = `${this.baseUrl}?apikey=${this.apiKey}&s=${query}`;
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          return data.Search || [];
+        } catch (err) {
+          console.error('Failed to search movies:', err);
+          return [];
+        }
+      }
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -140,6 +153,65 @@
 
       document.getElementById('oracle-insight').textContent =
         `With an IMDb rating of ${movie.imdbRating}, this ${movie.Genre.toLowerCase()} film promises a solid watch.`;
+
+      // Search suggestions logic
+      const searchBox = document.getElementById('search-box');
+      const suggestionsList = document.getElementById('suggestions-list');
+
+      if (searchBox && suggestionsList) {
+        searchBox.addEventListener('input', async () => {
+          const inputVal = searchBox.value.toLowerCase();
+          suggestionsList.innerHTML = ''; // Clear previous suggestions
+
+          if (inputVal === '') {
+            suggestionsList.classList.add('hidden');
+            return;
+          }
+
+          const filtered = await fetcher.searchMovies(inputVal);
+
+          if (filtered.length === 0) {
+            suggestionsList.classList.add('hidden');
+            return;
+          }
+
+          suggestionsList.classList.remove('hidden'); // Show the list
+
+          filtered.forEach(movie => {
+            const li = document.createElement('li');
+            li.className = 'px-4 py-2 hover:bg-gray-200 cursor-pointer flex items-center space-x-2';
+
+            const img = document.createElement('img');
+            img.src = movie.Poster || 'https://placehold.co/32x48/eee/ccc?text=?'; // Use placeholder if no poster
+            img.alt = movie.Title;
+            img.className = 'w-8 h-12 object-cover rounded';
+            img.onerror = function() { this.src='https://placehold.co/32x48/eee/ccc?text=?'; };
+
+            const span = document.createElement('span');
+            span.textContent = movie.Title;
+
+            li.appendChild(img);
+            li.appendChild(span);
+
+            li.addEventListener('click', () => {
+              searchBox.value = movie.Title; // Set input value on click
+              suggestionsList.classList.add('hidden'); // Hide suggestions
+              window.location.href = `movie-details.html?id=${movie.imdbID}`;
+            });
+
+            suggestionsList.appendChild(li);
+          });
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', (event) => {
+          if (!searchBox.contains(event.target) && !suggestionsList.contains(event.target)) {
+            suggestionsList.classList.add('hidden');
+          }
+        });
+      } else {
+        console.error("Search box or suggestions list element not found.");
+      }
     });
   </script>
 </body>
