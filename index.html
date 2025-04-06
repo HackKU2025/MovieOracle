@@ -1,13 +1,284 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Movie Details - Film Oracle</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <style>
+    .jayhawk-yellow {
+      color: #ffc82d;
+    }
+    .bg-jayhawk-yellow {
+      background-color: #ffc82d;
+    }
+    .hover-bg-jayhawk-yellow:hover {
+      background-color: #e6b329;
+    }
+    .focus-ring-jayhawk-yellow:focus-visible {
+      outline: 2px solid #e6b329;
+      outline-offset: 2px;
+    }
+    .oracle-insight {
+      background-color: #f3f4f6;
+      border: 1px solid #ffc82d;
+      padding: 0.75rem;
+      border-radius: 0.375rem;
+      margin-top: 1rem;
+      color: #4b5563;
+    }
+    .oracle-insight-title {
+      font-weight: 600;
+      color: #ffc82d;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body class="bg-gray-200 text-gray-800 font-serif">
+  <header class="bg-gray-100 bg-opacity-90 backdrop-blur-md sticky top-0 z-50 shadow-md">
+    <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <a href="index.html" class="text-xl font-bold jayhawk-yellow">Film Oracle</a>
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <input
+            type="text"
+            id="search-box"
+            placeholder="Search movies..."
+            class="bg-gray-300 text-gray-700 rounded-md px-3 py-2 w-64 focus:outline-none focus-ring-2 focus-ring-jayhawk-yellow"
+            autocomplete="off"
+          />
+          <ul class="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-md shadow-md mt-1 z-50 hidden max-h-60 overflow-y-auto" id="suggestions-list"></ul>
+        </div>
+        <a href="#" class="hover:text-gray-600">Watchlist</a>
+        <a href="#" class="hover:text-gray-600">Sign In</a>
+        <button class="bg-jayhawk-yellow hover-bg-jayhawk-yellow text-gray-900 font-semibold py-2 px-4 rounded-md focus:outline-none focus-ring-jayhawk-yellow">Sign Up</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container mx-auto px-4 py-10">
+    <!-- Hero Section -->
+    <section id="hero" class="bg-white rounded-lg shadow-md overflow-hidden mb-10">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 p-6">
+        <div class="md:col-span-1 flex justify-center">
+          <a id="hero-link" href="#" class="block">
+            <img id="hero-poster" src="https://via.placeholder.com/300x450" alt="Featured Movie Poster" class="rounded-md shadow-lg"/>
+          </a>
+        </div>
+        <div class="md:col-span-2">
+          <h1 id="hero-title" class="text-3xl font-bold mb-2 jayhawk-yellow">Loading...</h1>
+          <p class="text-gray-600 mb-1">Director: <span id="hero-director" class="font-semibold">Loading...</span></p>
+          <p class="text-gray-600 mb-3">Published Year: <span id="hero-year" class="font-semibold">Loading...</span></p>
+          <h2 class="text-xl font-semibold mb-2 jayhawk-yellow">Overview</h2>
+          <p id="hero-overview" class="text-gray-700">Loading...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trending Movies Section -->
+    <section id="trending-movies" class="mb-10">
+      <h2 class="text-2xl font-semibold mb-4 jayhawk-yellow">Trending Movies</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="trending-movies-list">
+        <!-- Trending movies will be injected here -->
+      </div>
+    </section>
+
+    <!-- TV Shows Section -->
+    <section id="tv-shows" class="mb-10">
+      <h2 class="text-2xl font-semibold mb-4 jayhawk-yellow">Trending TV Shows</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="tv-shows-list">
+        <!-- TV shows will be injected here -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-gray-100 py-8 text-gray-600 text-sm shadow-inner mt-10">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+      <p>&copy; 2025 Film Oracle. All rights reserved.</p>
+      <div class="flex space-x-4">
+        <a href="#" class="hover:text-gray-700">Terms of Service</a>
+        <a href="#" class="hover:text-gray-700">Privacy Policy</a>
+        <a href="#" class="hover:text-gray-700">Contact Us</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    class MovieFetcher {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.baseUrl = 'https://www.omdbapi.com/';
+      }
+
+      async getMovie(imdbID) {
+        const url = `${this.baseUrl}?apikey=${this.apiKey}&i=${imdbID}`;
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          return data;
+        } catch (err) {
+          console.error('Failed to fetch movie:', err);
+          return null;
+        }
+      }
+
+      async getTrendingMovies() {
+        const url = `${this.baseUrl}?apikey=${this.apiKey}&s=trending&type=movie`;
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          return data.Search || [];
+        } catch (err) {
+          console.error('Failed to fetch trending movies:', err);
+          return [];
+        }
+      }
+
+      async getTrendingTVShows() {
+        const url = `${this.baseUrl}?apikey=${this.apiKey}&s=trending&type=series`;
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          return data.Search || [];
+        } catch (err) {
+          console.error('Failed to fetch trending TV shows:', err);
+          return [];
+        }
+      }
+
+      async searchMovies(query) {
+        const url = `${this.baseUrl}?apikey=${this.apiKey}&s=${query}`;
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          return data.Search || [];
+        } catch (err) {
+          console.error('Failed to search movies:', err);
+          return [];
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+  const fetcher = new MovieFetcher('INSERT API HERE');
+
+  // Fetch Hero Movie (Featured) - The Dark Knight
+  const heroMovie = await fetcher.getMovie('tt0468569'); // IMDb ID for The Dark Knight
+  if (heroMovie && heroMovie.Response === 'True') {
+    document.getElementById('hero-poster').src = heroMovie.Poster;
+    document.getElementById('hero-title').textContent = heroMovie.Title;
+    document.getElementById('hero-director').textContent = heroMovie.Director;
+    document.getElementById('hero-year').textContent = heroMovie.Year;
+    document.getElementById('hero-overview').textContent = heroMovie.Plot;
+    document.getElementById('hero-link').href = `movie-details.html?id=${heroMovie.imdbID}`;
+  }
+
+  // Fetch Trending Movies (Limit to 4)
+  const trendingMovies = await fetcher.getTrendingMovies();
+  const trendingMoviesList = document.getElementById('trending-movies-list');
+  trendingMovies.slice(0, 4).forEach(movie => {
+    const movieCard = document.createElement('div');
+    movieCard.classList.add('bg-white', 'rounded-lg', 'shadow-md', 'overflow-hidden');
+    
+    // Fallback for missing poster
+    const poster = movie.Poster ? movie.Poster : 'https://via.placeholder.com/300x450?text=No+Image';
+    const title = movie.Title ? movie.Title : 'No Title Available';
+
+    movieCard.innerHTML = `
+      <a href="movie-details.html?id=${movie.imdbID}">
+        <img src="${poster}" alt="${title}" class="w-full h-56 object-cover"/>
+      </a>
+      <div class="p-4">
+        <h3 class="text-xl font-semibold text-gray-800">${title}</h3>
+        <p class="text-gray-600">${movie.Year}</p>
+      </div>
+    `;
+    trendingMoviesList.appendChild(movieCard);
+  });
+
+  // Fetch Trending TV Shows (Limit to 4)
+  const trendingTVShows = await fetcher.getTrendingTVShows();
+  const tvShowsList = document.getElementById('tv-shows-list');
+  trendingTVShows.slice(0, 4).forEach(show => {
+    const tvShowCard = document.createElement('div');
+    tvShowCard.classList.add('bg-white', 'rounded-lg', 'shadow-md', 'overflow-hidden');
+    
+    // Fallback for missing poster
+    const poster = show.Poster ? show.Poster : 'https://via.placeholder.com/300x450?text=No+Image';
+    const title = show.Title ? show.Title : 'No Title Available';
+
+    tvShowCard.innerHTML = `
+      <a href="movie-details.html?id=${show.imdbID}">
+        <img src="${poster}" alt="${title}" class="w-full h-56 object-cover"/>
+      </a>
+      <div class="p-4">
+        <h3 class="text-xl font-semibold text-gray-800">${title}</h3>
+        <p class="text-gray-600">${show.Year}</p>
+      </div>
+    `;
+    tvShowsList.appendChild(tvShowCard);
+  });
+
+  // Search suggestions logic
+  const searchBox = document.getElementById('search-box');
+  const suggestionsList = document.getElementById('suggestions-list');
+
+  if (searchBox && suggestionsList) {
+    searchBox.addEventListener('input', async () => {
+      const inputVal = searchBox.value.toLowerCase();
+      suggestionsList.innerHTML = ''; // Clear previous suggestions
+
+      if (inputVal === '') {
+        suggestionsList.classList.add('hidden');
+        return;
+      }
+
+      const filtered = await fetcher.searchMovies(inputVal);
+
+      if (filtered.length === 0) {
+        suggestionsList.classList.add('hidden');
+        return;
+      }
+
+      suggestionsList.classList.remove('hidden'); // Show the list
+
+      filtered.forEach(movie => {
+        const li = document.createElement('li');
+        li.className = 'px-4 py-2 hover:bg-gray-200 cursor-pointer flex items-center space-x-2';
+
+        const img = document.createElement('img');
+        img.src = movie.Poster || 'https://via.placeholder.com/32x48?text=?'; // Use placeholder if no poster
+        img.alt = movie.Title;
+        img.className = 'w-8 h-12 object-cover rounded';
+        img.onerror = function() { this.src='https://via.placeholder.com/32x48?text=?'; };
+
+        const span = document.createElement('span');
+        span.textContent = movie.Title;
+
+        li.appendChild(img);
+        li.appendChild(span);
+
+        li.addEventListener('click', () => {
+          searchBox.value = movie.Title; // Set input value on click
+          suggestionsList.classList.add('hidden'); // Hide suggestions
+          // Optionally trigger search or load details here
+          window.location.href = `movie-details.html?id=${movie.imdbID}`;
+        });
+
+        suggestionsList.appendChild(li);
+      });
+    });
+
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', (event) => {
+      if (!searchBox.contains(event.target) && !suggestionsList.contains(event.target)) {
+        suggestionsList.classList.add('hidden');
+      }
+    });
+  } else {
+    console.error("Search box or suggestions list element not found.");
+  }
+});
+  </script>
+</body>
 </html>
